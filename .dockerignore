@@ -1,0 +1,19 @@
+# These folders should be mounted with the docker run command
+data/
+assets/
+# Ignore these file types
+*.ckpt
+*.pth
+*.pt
+*.npy
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tif
+*.tiff
+# Other 
+.idea/
+.vscode/
+__pycache__/
+*.log
