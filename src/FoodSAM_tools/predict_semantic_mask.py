@@ -10,9 +10,13 @@ import torch
 sys.path.append('.')
 from mmcv.image import tensor2imgs
 from mmcv.parallel import MMDataParallel
-from src.mmseg.apis.inference import inference_segmentor, init_segmentor
+
+from src.mmseg.apis.inference import inference_segmentor, init_segmentor, inference_segmentor_timed
 from src.mmseg.datasets.builder import build_dataloader, build_dataset
 from src.mmseg.models.builder import build_segmentor
+
+from src.mmseg.utils.timing import SegTimes
+import csv, pathlib
 
 
 def save_result(img_path,
@@ -202,9 +206,20 @@ def single_gpu_test(model,
     return results
 
 
+def log_times_csv(times: SegTimes, csv_path='segmentor_times.csv'):
+    csv_path = pathlib.Path(csv_path)
+    write_header = not csv_path.exists()
+
+    with csv_path.open('a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=SegTimes.__annotations__.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(times.__dict__)
+
+
 def semantic_predict(data_root, img_dir, ann_dir, config, options, aug_test, checkpoint, eval_options,
                      color_list_path, show_vis,
-                     img_path=None, output_path=None):
+                     img_path=None, output_path=None, log_path=None):
     """
     Perform semantic segmentation prediction on a single image or a dataset.
 
@@ -263,7 +278,9 @@ def semantic_predict(data_root, img_dir, ann_dir, config, options, aug_test, che
         #print(model)
 
         # Perform inference on the image
-        result = inference_segmentor(model, img_path)
+        result, times = inference_segmentor_timed(model, img_path, return_times=True)
+
+        log_times_csv(times= times, csv_path= log_path)
 
         # Save the result
         save_result(

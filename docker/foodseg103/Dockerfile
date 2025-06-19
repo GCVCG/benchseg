@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y build-essential libgl1 libglib2.0-0 lib
 
 RUN apt-get -y update && apt-get install -y wget imagemagick parallel
 
+RUN pip install --no-cache-dir "numpy==1.26.4" 
 RUN pip install mmcv-full==1.7.0 -f https://download.openmmlab.com/mmcv/dist/cu116/torch1.13/index.html
 RUN pip install opencv-python==4.8.0.76
 RUN pip install timm==0.9.5
@@ -29,3 +30,4 @@ RUN pip install pycocotools==2.0.6
 RUN pip install pillow==9.1.0
 RUN pip install werkzeug==2.2.3
 RUN pip install chardet
+RUN pip install pandas

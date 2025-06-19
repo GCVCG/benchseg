@@ -6,7 +6,9 @@ from mmcv.runner import load_checkpoint
 
 from src.mmseg.datasets.pipelines import Compose
 from src.mmseg.models import build_segmentor
+from src.mmseg.utils.timing import SegTimes
 
+import time
 
 def init_segmentor(config, checkpoint=None, device='cuda:0'):
     """
@@ -124,6 +126,48 @@ def inference_segmentor(model, img):
     with torch.no_grad():
         result = model(return_loss=False, rescale=True, **data)
 
+    return result
+
+
+def inference_segmentor_timed(model, img, *, return_times=False):
+    cfg    = model.cfg
+    device = next(model.parameters()).device
+
+    test_pipeline = [LoadImage()] + cfg.data.test.pipeline[1:]
+    test_pipeline = Compose(test_pipeline)
+
+    t0 = time.perf_counter()                       # --------------- wall-clock start
+
+    data = test_pipeline(dict(img=img))
+    data = collate([data], samples_per_gpu=1)
+
+    # ---------- copy to GPU (if any) ----------
+    if next(model.parameters()).is_cuda:
+        torch.cuda.synchronize(device)
+        cp_start, cp_end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+        cp_start.record()
+        data = scatter(data, [device])[0]
+        cp_end.record()
+        torch.cuda.synchronize(device)
+        to_gpu_ms = cp_start.elapsed_time(cp_end)
+    else:                                          # CPU path
+        data['img_metas'] = [m.data[0] for m in data['img_metas']]
+        to_gpu_ms = None
+
+    # ---------- forward pass ----------
+    torch.cuda.synchronize(device)
+    fwd_start, fwd_end = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+    fwd_start.record()
+    with torch.no_grad():
+        result = model(return_loss=False, rescale=True, **data)
+    fwd_end.record()
+    torch.cuda.synchronize(device)
+    infer_ms = fwd_start.elapsed_time(fwd_end)
+
+    total_ms = (time.perf_counter() - t0) * 1e3
+
+    if return_times:
+        return result, SegTimes(to_gpu_ms, infer_ms, total_ms)
     return result
 
 
