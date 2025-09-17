@@ -5,7 +5,8 @@ FROM ultralytics/ultralytics:8.3.158
 RUN pip install --no-cache-dir \
         "numpy<2.0" \
         opencv-python-headless==4.10.0.82 \
-        scikit-learn matplotlib albumentations==1.4.3
+        scikit-learn matplotlib albumentations==1.4.3 \
+        torchmetrics
 
 # ---- System layer ----
 RUN apt-get update && \
