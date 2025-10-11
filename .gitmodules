@@ -1,0 +1,3 @@
+[submodule "tracking_models/XMem2"]
+	path = tracking_models/XMem2
+	url = https://github.com/mbzuai-metaverse/XMem2.git

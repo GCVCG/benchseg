@@ -7,8 +7,8 @@ docker run -it --gpus all --rm --ipc=host \
   --entrypoint "" \
   yolo \
   python src/eval_map.py \
-  --submit_dir data/mtf_yolo/images/results/YOLO_binary \
-  --truth_dir data/mtf_yolo/binary-masks/test_binary \
-  --output_dir data/mtf_yolo/metrics \
+  --submit_dir data/mtf_foodMem_reordered/results/YOLO_XMEM2_binary \
+  --truth_dir data/mtf_foodMem_reordered/masks \
+  --output_dir data/mtf_foodMem_reordered/metrics \
   --num_classes 2 \
   --show_error

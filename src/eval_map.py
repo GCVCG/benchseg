@@ -9,7 +9,18 @@ from functools import partial
 from collections import defaultdict
 
 def get_base_filename(filename):
-    """Returns the filename without extension"""
+    """Retur        for base_filename in tqdm(all_gt_files):
+            gt_path = os.path.join(truth_dir, truth_files[base_filename])
+            gt = np.array(Image.open(gt_path).convert('L'))
+            
+            # Handle missing submission files
+            submit_file = submit_files.get(base_filename, None)
+            if submit_file is None:
+                # Create background-only prediction
+                pred = np.zeros_like(gt)
+            else:
+                pred_path = os.path.join(submit_dir, submit_file)
+                pred = np.array(Image.open(pred_path).convert('L')) filename without extension"""
     return os.path.splitext(filename)[0]
 
 def get_mask_filenames(directory):
@@ -54,8 +65,15 @@ def process_single_image(args, num_classes):
     """
     base_filename, submit_file, truth_file, submit_dir, truth_dir = args
 
-    pred_np = np.array(Image.open(os.path.join(submit_dir, submit_file)).convert('L'), dtype=np.int64)
-    gt_np   = np.array(Image.open(os.path.join(truth_dir,  truth_file)).convert('L'), dtype=np.int64)
+    # Load ground truth
+    gt_np = np.array(Image.open(os.path.join(truth_dir, truth_file)).convert('L'), dtype=np.int64)
+    
+    # Load prediction or create background-only prediction if file doesn't exist
+    if submit_file is None:
+        # Create fully background prediction (all zeros) with same shape as ground truth
+        pred_np = np.zeros_like(gt_np, dtype=np.int64)
+    else:
+        pred_np = np.array(Image.open(os.path.join(submit_dir, submit_file)).convert('L'), dtype=np.int64)
 
     if num_classes == 2:
         # Binarize to {0,1} for binary metrics
@@ -147,17 +165,21 @@ def evaluate_masks(submit_dir, truth_dir, output_dir, num_classes, show_error=Fa
         error_masks_dir = os.path.join(output_dir, "error_masks")
         os.makedirs(error_masks_dir, exist_ok=True)
 
-    # Validate file counts
-    if len(submit_files) != len(truth_files):
-        raise ValueError("Number of masks in submit_dir and truth_dir does not match.")
-
-    # Get common files
-    common_files = sorted(list(set(submit_files.keys()) & set(truth_files.keys())))
-    if len(common_files) != len(submit_files):
-        raise ValueError(f"Found {len(common_files)} matching pairs out of {len(submit_files)} files.")
-
-    # Prepare for parallel processing
-    process_args = [(f, submit_files[f], truth_files[f], submit_dir, truth_dir) for f in common_files]
+    # Process all ground truth files - use None for missing submission files
+    all_gt_files = sorted(truth_files.keys())
+    missing_submission_count = 0
+    
+    process_args = []
+    for base_filename in all_gt_files:
+        truth_file = truth_files[base_filename]
+        submit_file = submit_files.get(base_filename, None)  # None if missing
+        if submit_file is None:
+            missing_submission_count += 1
+        process_args.append((base_filename, submit_file, truth_file, submit_dir, truth_dir))
+    
+    print(f"Processing {len(all_gt_files)} ground truth files.")
+    if missing_submission_count > 0:
+        print(f"Warning: {missing_submission_count} submission files are missing and will be treated as background-only predictions.")
 
     num_processes = min(cpu_count(), 8)
     print(f"Processing images using {num_processes} processes...")
@@ -222,7 +244,7 @@ def evaluate_masks(submit_dir, truth_dir, output_dir, num_classes, show_error=Fa
     report_path = os.path.join(output_dir, "metrics.txt")
     with open(report_path, "w") as f:
         f.write("Per-image results:\n")
-        for filename in common_files:
+        for filename in all_gt_files:
             m = per_image_metrics[filename]
             if num_classes == 2:
                 # Only AP and Recall
@@ -244,23 +266,32 @@ def evaluate_masks(submit_dir, truth_dir, output_dir, num_classes, show_error=Fa
     # -------- Error visualization (optional) --------
     if show_error:
         print("\nGenerating error visualization images...")
-        for base_filename in tqdm(common_files):
-            pred_path = os.path.join(submit_dir, submit_files[base_filename])
-            gt_path   = os.path.join(truth_dir,  truth_files[base_filename])
+        for base_filename in tqdm(all_gt_files):
+            submit_file = submit_files.get(base_filename, None)
+            gt_path = os.path.join(truth_dir, truth_files[base_filename])
 
-            pred = np.array(Image.open(pred_path).convert('L'))
-            gt   = np.array(Image.open(gt_path).convert('L'))
+            if submit_file is None:
+                # Create background-only prediction for missing submission
+                gt = np.array(Image.open(gt_path).convert('L'))
+                pred = np.zeros_like(gt)
+            else:
+                pred_path = os.path.join(submit_dir, submit_file)
+                pred = np.array(Image.open(pred_path).convert('L'))
+                gt = np.array(Image.open(gt_path).convert('L'))
 
             if num_classes == 2:
                 # Expecting labels {0,>0}; turn into booleans for the helper
                 submit_mask = (pred > 0)
                 truth_mask  = (gt > 0)
                 error_image = generate_error_image(submit_mask, truth_mask)
-                Image.fromarray(error_image).save(os.path.join(error_masks_dir, submit_files[base_filename]))
+                # Use the ground truth filename for output if submission is missing
+                output_filename = submit_file if submit_file else truth_files[base_filename]
+                Image.fromarray(error_image).save(os.path.join(error_masks_dir, output_filename))
             else:
                 # Simple mismatch map: 0 where correct, 255 where labels differ
                 mismatch = (pred != gt).astype(np.uint8) * 255
-                Image.fromarray(mismatch).save(os.path.join(error_masks_dir, submit_files[base_filename]))
+                output_filename = submit_file if submit_file else truth_files[base_filename]
+                Image.fromarray(mismatch).save(os.path.join(error_masks_dir, output_filename))
 
     # Return unchanged tuple for compatibility
     return mIoU, mAcc, mean_recallC, iou_per_class_ds, acc_per_class_ds, recall_per_class_ds
