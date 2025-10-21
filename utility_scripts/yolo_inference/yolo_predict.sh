@@ -43,7 +43,7 @@ docker run -it --gpus all --rm --ipc=host \
   --entrypoint "" \
   "${IMAGE_NAME}" \
   python /workspace/src/yolo_inference.py \
-  assets/ckpts/YOLO/yolo11s-seg_foodseg1032_binary.pt \
+  assets/ckpts/YOLO/yolo11s-seg_foodseg1032.pt \
   "${IMAGES_DIR}" \
   "${YOLO_RESULTS_DIR}/"
 

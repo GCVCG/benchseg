@@ -1,7 +1,8 @@
 import os
 import re
 
-datasets = ["V&F", "n5k", "n5k360", "mtf_foodMem"]
+# datasets = ["V&F", "n5k", "n5k360", "mtf_foodMem"]
+datasets = ["FoodKit_dataset"]
 paths = [os.path.join("data", i) for i in datasets]
 output_paths = [os.path.join("data", i + "_reordered") for i in datasets]
 
@@ -21,8 +22,8 @@ for path, output_path in zip(paths, output_paths):
     os.makedirs(os.path.join(output_path, "masks"), exist_ok=True)
 
     for d in dirs:
-        images_path = os.path.join(path, d, "imgs")
-        masks_path = os.path.join(path, d, "gt_masks")
+        images_path = os.path.join(path, d, "images")
+        masks_path = os.path.join(path, d, "masks")
 
         # Use natural sorting for proper numeric order
         image_files = sorted(os.listdir(images_path), key=natural_sort_key)

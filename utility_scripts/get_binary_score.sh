@@ -24,9 +24,9 @@ fi
 DATASET_DIR="${1%/}"
 NUM_CLASSES="${2:-2}"
 
-SUBMIT_DIR="${DATASET_DIR}/results/YOLO_BINARY_binary"
+SUBMIT_DIR="${DATASET_DIR}/results/YOLO_binary"
 TRUTH_DIR="${DATASET_DIR}/masks"
-OUTPUT_DIR="${DATASET_DIR}/metrics/YOLO_BINARY"
+OUTPUT_DIR="${DATASET_DIR}/metrics/YOLO"
 
 docker run -it --gpus all --rm --ipc=host \
   -v "$(pwd)/assets:/workspace/assets" \
