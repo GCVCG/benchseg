@@ -15,20 +15,10 @@ OUTPUT="${2%/}"
 MAX_JOBS="${3:-$(nproc)}"  # Default to number of CPU cores
 mkdir -p "$OUTPUT"
 
-# Optional: use `timeout` if available so we don't hit IM's internal time policy
 TIMEOUT=""
 if command -v timeout >/dev/null 2>&1; then
   TIMEOUT="timeout 30s"     # kill any file that takes >30s
 fi
-
-# Speed + stability tweaks:
-# - -limit time 25: keep each op under the IM policy
-# - -limit memory/map: avoid excessive swapping
-# - -strip: drop metadata
-# - -threshold 0: any non-zero => white
-# - -type bilevel: force 1-bit mask
-# -define png:compression-level=9: small files, still fast
-# -quiet: reduce stderr noise
 
 # Function to process a single image
 process_image() {

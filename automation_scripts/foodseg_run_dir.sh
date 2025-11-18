@@ -39,7 +39,7 @@ declare -A CONFIG_PATHS=(
   [CCNET]="assets/ckpts/CCNet/ccnet_r101-d8_512x1024_80k.py"
   [CCNET_RELEM]="assets/ckpts/CCNet_ReLeM/ccnet_r50-d8_512x1024_80k.py"
   [SETR_MLA_L384]="assets/ckpts/SETR_MLA_L384/SETR_MLA_768x768_80k.py"
-  [SETR_MLA_L384_SMALLER]="assets/ckpts/SETR_MLA_L384/SETR_MLA_768x768_80k_smaller.py"
+  # [SETR_MLA_L384_SMALLER]="assets/ckpts/SETR_MLA_L384/SETR_MLA_768x768_80k_smaller.py"
   [SETR_NAIVE]="assets/ckpts/SETR_Naive/SETR_Naive_768x768_80k_base.py"
 )
 
@@ -50,7 +50,7 @@ declare -A CHECKPOINT_PATHS=(
   [CCNET]="assets/ckpts/CCNet/iter_80000.pth"
   [CCNET_RELEM]="assets/ckpts/CCNet_ReLeM/iter_80000.pth"
   [SETR_MLA_L384]="assets/ckpts/SETR_MLA_L384/iter_80000.pth"
-  [SETR_MLA_L384_SMALLER]="assets/ckpts/SETR_MLA_L384/iter_80000.pth"
+  # [SETR_MLA_L384_SMALLER]="assets/ckpts/SETR_MLA_L384/iter_80000.pth"
   [SETR_NAIVE]="assets/ckpts/SETR_Naive/iter_80000.pth"
 )
 

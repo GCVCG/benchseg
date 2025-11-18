@@ -53,10 +53,23 @@ for image_path in "$IMAGES_DIR"/*.png; do
   mask_filename=$(basename "$mask_path")
 
   image_filename=$(basename "$image_path")
-  video_id="${image_filename%%_*}"
-  frame_id="${image_filename#*_}"
-  frame_stem="${frame_id%.*}"            # -> "023"
-  frame_num=$((10#$frame_stem))          # -> 23 (force base-10)
+  # Extract filename without extension
+  filename_no_ext="${image_filename%.*}"
+  
+  # Extract frame digits from the end (last underscore group)
+  frame_digits="${filename_no_ext##*_}"
+  if [[ "$frame_digits" =~ ^[0-9]+$ ]]; then
+      frame_num=$((10#$frame_digits))
+      # Video ID is everything before the last underscore + frame digits
+      video_id="${filename_no_ext%_${frame_digits}}"
+      frame_id="${frame_digits}.${image_filename##*.}"  # frame digits + original extension
+  else
+      # Fallback to original logic if no numeric suffix found
+      video_id="${image_filename%%_*}"
+      frame_id="${image_filename#*_}"
+      frame_num=0
+  fi
+
 
   mkdir -p "$TEMP_DIR/${video_id}_temp/frames" 
   mkdir -p "$TEMP_DIR/${video_id}_temp/masks"
@@ -90,7 +103,7 @@ for temp_video_dir in "$TEMP_DIR"/*_temp; do
     done
     # Clean up the mask and overlay directories created by the script
     rm -rf "$OUTPUT_DIR/masks" "$OUTPUT_DIR/overlay"
-    /home/guill_unix/repos/SpiceSeg/utility_scripts/binarize.sh "$OUTPUT_DIR" "${OUTPUT_DIR}_binary"
+    # /home/guill_unix/repos/SpiceSeg/utility_scripts/binarize.sh "$OUTPUT_DIR" "${OUTPUT_DIR}_binary"
   else
     echo "Warning: XMem2 inference failed for video $(basename "$temp_video_dir" | sed 's/_temp$//'), skipping to next video..." >&2
   fi
