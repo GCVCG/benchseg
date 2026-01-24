@@ -274,7 +274,7 @@ end_timer() {
   
   # Write to CSV (overwrite existing)
   mkdir -p "$OUTPUT_DIR"
-  local csv_file="$OUTPUT_DIR/timing.csv"
+  local csv_file="$OUTPUT_DIR/raw_inference_script_runtime.csv"
   
   # Write header and data
   {
