@@ -4,6 +4,7 @@
 import argparse
 import os
 from pathlib import Path
+from tracemalloc import start
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -57,7 +58,6 @@ def ensure_dir(p: str):
     Path(p).mkdir(parents=True, exist_ok=True)
 
 
-
 def save_binary_mask(mask, out_path):
     """
     Accepts a torch.Tensor or numpy array with shapes (H,W), (1,H,W), or (H,W,1).
@@ -87,19 +87,19 @@ def save_binary_mask(mask, out_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="VOS mask tracking with SAM2 using an initial image mask."
+        description="VOS mask tracking with SAM2 using initial image masks."
     )
     parser.add_argument("--video_path", required=True,
                         help="Path to a video file OR a folder of numerically named frames (e.g., 00001.jpg).")
-    parser.add_argument("--mask_path", required=True,
-                        help="Path to a binary or labeled mask image for the selected frame.")
+    parser.add_argument("--mask_dir", required=True,
+                        help="Path to directory containing seed mask images.")
+    parser.add_argument("--n_masks", type=int, default=1,
+                        help="Number of mask files to use as seed masks (uses first N files sorted by name).")
     parser.add_argument("--frame_idx", type=int, default=0,
-                        help="Index of the frame where the mask applies (default: 0).")
+                        help="Index of the frame where the masks apply (default: 0).")
     parser.add_argument("--checkpoint", default="checkpoints/sam2.1_hiera_large.pt")
     parser.add_argument("--config", default="configs/sam2.1/sam2.1_hiera_l.yaml")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
-    parser.add_argument("--obj_id", type=int, default=None,
-                        help="Optional object id to use when mask is binary. Ignored for labeled masks.")
     parser.add_argument("--out_dir", default="vos_masks",
                         help="Where to save per-frame masks.")
     parser.add_argument("--vos_optimized", action="store_true",
@@ -112,6 +112,30 @@ def main():
 
     args = parser.parse_args()
     ensure_dir(args.out_dir)
+
+    # Build mapping from frame index to original filename (without extension)
+    # This ensures that output masks have consistent names with input frames.
+    frame_names_map = {}
+    if os.path.isdir(args.video_path):
+        # List all image files and map them by their index
+        import glob
+        image_files = sorted(glob.glob(os.path.join(args.video_path, "*.jpg"))) + \
+                      sorted(glob.glob(os.path.join(args.video_path, "*.png"))) + \
+                      sorted(glob.glob(os.path.join(args.video_path, "*.jpeg")))
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_files = []
+        for f in image_files:
+            if f not in seen:
+                seen.add(f)
+                unique_files.append(f)
+        image_files = unique_files
+        
+        for idx, img_path in enumerate(image_files):
+            # Extract filename without extension
+            filename_with_ext = os.path.basename(img_path)
+            filename_without_ext = os.path.splitext(filename_with_ext)[0]
+            frame_names_map[str(idx)] = filename_without_ext
 
     # Build predictor just like in the notebook.
     predictor = build_sam2_video_predictor(
@@ -129,33 +153,24 @@ def main():
         async_loading_frames=args.async_loading_frames,
     )
 
-    # Load mask image.
-    raw_mask = load_mask_image(args.mask_path)
+    # Discover mask files in the mask directory
+    import glob
+    mask_files = sorted(glob.glob(os.path.join(args.mask_dir, "*.png"))) + \
+                 sorted(glob.glob(os.path.join(args.mask_dir, "*.jpg")))
+    mask_files = mask_files[:args.n_masks]  # Take only first n_masks
+    
+    if not mask_files:
+        raise ValueError(f"No mask files found in {args.mask_dir}")
 
-    # Add mask prompt(s).
-    if raw_mask.dtype == bool:
-        # Single binary mask
-        obj_id = args.obj_id if args.obj_id is not None else 1
+    # Add mask prompts from the first N mask files
+    for mask_path in mask_files:
+        raw_mask = load_mask_image(mask_path)
         _, _, _ = predictor.add_new_mask(
             inference_state=inference_state,
             frame_idx=args.frame_idx,
-            obj_id=obj_id,
+            obj_id=1,
             mask=raw_mask,
         )
-        obj_ids = [obj_id]
-    else:
-        # Labeled mask -> one object per label (>0)
-        insts = labeled_to_instances(raw_mask)
-        obj_ids = sorted(list(insts.keys()))
-        if len(obj_ids) == 0:
-            raise ValueError("No objects found in labeled mask (>0 labels).")
-        for oid in obj_ids:
-            _, _, _ = predictor.add_new_mask(
-                inference_state=inference_state,
-                frame_idx=args.frame_idx,
-                obj_id=int(oid),
-                mask=insts[oid],
-            )
 
     # Propagate through the entire video and save out masks.
     # The iterator yields (out_frame_idx, out_obj_ids, out_masks_at_video_res).
@@ -163,7 +178,12 @@ def main():
     for out_frame_idx, out_obj_ids, out_masks in predictor.propagate_in_video(inference_state):
         # Save one file per object.
         for k, oid in enumerate(out_obj_ids):
-            out_name = f"{out_frame_idx:05d}_obj{oid}.png"
+            # Use mapped frame name if available, otherwise use index
+            if str(out_frame_idx) in frame_names_map:
+                base_name = frame_names_map[str(out_frame_idx)]
+            else:
+                base_name = f"{out_frame_idx:05d}"
+            out_name = f"{base_name}_obj{oid}.png"
             save_binary_mask(out_masks[k], os.path.join(args.out_dir, out_name))
 
     print(f"Done! Wrote per-frame masks to: {args.out_dir}")

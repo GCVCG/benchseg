@@ -40,5 +40,5 @@ for split in splits:
     convert_segment_masks_to_yolo_seg(                # :contentReference[oaicite:1]{index=1}
         masks_dir=str(MASK_DIR / split),
         output_dir=str(DST / "labels" / split),
-        classes=2            # FoodSeg103 has 104 classes (103 foreground + 1 background)
+        classes=N_CLASS
     )

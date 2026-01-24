@@ -6,7 +6,7 @@ import sys
 print(sys.argv[1:4])
 model = YOLO(sys.argv[1]) 
 imgdir = sys.argv[2]
-outdir = os.path.dirname(sys.argv[3])
+outdir = sys.argv[3]
 
 def instance2semantic(r, background_id: int = 0, out_dtype: np.dtype = np.uint8, offset_classes: bool = True):
     # No detections
@@ -40,7 +40,6 @@ def instance2semantic(r, background_id: int = 0, out_dtype: np.dtype = np.uint8,
 
 
 
-# outdir = "/workspace/data/FoodSeg103_yolo/images/results/YOLO"
 os.makedirs(outdir, exist_ok=True)
 for r in model.predict(imgdir, batch=16, retina_masks=True, stream=True, imgsz=640):
     path = r.path

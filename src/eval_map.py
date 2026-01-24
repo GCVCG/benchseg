@@ -224,7 +224,7 @@ def main():
                         help='Directory with prediction masks')
     parser.add_argument('--truth_dir', type=str, required=True,
                         help='Directory with ground truth masks')
-    parser.add_argument('--output_dir', type=str, default='../output',
+    parser.add_argument('--output_dir', type=str, required=True,
                         help='Output directory for results')
     parser.add_argument('--num_workers', type=int, default=None,
                         help='Number of parallel workers (default: min(cpu_count, 8))')

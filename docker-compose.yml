@@ -1,0 +1,74 @@
+version: '3.9'
+
+# Service definitions for SpiceSeg Docker images
+# 
+# Each service:
+# - Builds from its respective Dockerfile
+# - Mounts specific project directories (following current script patterns)
+# - Sets working directory to /workspace
+# - Supports interactive use with stdin and tty
+
+services:
+  foodseg103:
+    build:
+      context: ./docker/foodseg103
+      dockerfile: Dockerfile
+    image: foodseg103:latest
+    container_name: spiceseg-foodseg103
+    volumes:
+      - ./assets:/workspace/assets
+      - ./data:/workspace/data
+      - ./src:/workspace/src
+      - ./utility_scripts:/workspace/utility_scripts
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+  yolo:
+    build:
+      context: ./docker/YOLO
+      dockerfile: Dockerfile
+    image: yolo:latest
+    container_name: spiceseg-yolo
+    volumes:
+      - ./assets:/workspace/assets
+      - ./data:/workspace/data
+      - ./yolo/runs:/workspace/runs
+      - ./src:/workspace/src
+      - ./utility_scripts:/workspace/utility_scripts
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+  sam2:
+    build:
+      context: ./docker/sam2
+      dockerfile: Dockerfile
+    image: sam2:latest
+    container_name: spiceseg-sam2
+    volumes:
+      - ./assets:/workspace/assets
+      - ./data:/workspace/data
+      - ./test_runs:/workspace/test_runs
+      - ./src:/workspace/src
+      - ./utility_scripts:/workspace/utility_scripts
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
+  xmem2:
+    build:
+      context: ./tracking_models/XMem2
+      dockerfile: ../../docker/XMEM2/Dockerfile
+    image: xmem2:latest
+    container_name: spiceseg-xmem2
+    volumes:
+      - ./assets:/workspace/assets
+      - ./data:/workspace/data
+      - ./test_runs:/workspace/test_runs
+      - ./src:/workspace/src
+      - ./utility_scripts:/workspace/utility_scripts
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+

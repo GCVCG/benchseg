@@ -2,3 +2,8 @@ data/
 assets/
 yolo/runs/
 src/mmseg/
+.vscode/
+deliverables/
+__pycache__/
+src/yolo/runs/
+tracking_models/sam2/
