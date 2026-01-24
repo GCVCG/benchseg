@@ -498,6 +498,10 @@ run_mixed_workflow() {
   # Binarize the segmentation masks
   binarize_masks "$temp_seg_output"
   
+  # Remove any non-image files from mask directory (e.g., runtime_log.csv)
+  find "$temp_seg_output" -type f ! \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' -o -iname '*.bmp' -o -iname '*.tif' -o -iname '*.tiff' \) -delete
+
+  
   INPUT_DIR="$saved_input_dir"
   OUTPUT_DIR="$saved_output_dir"
   MASK_DIR="$temp_seg_output"
