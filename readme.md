@@ -83,7 +83,7 @@ After that, simply call the the script from the project root:
 
 The script will launch a YOLO fine-tune run for the specified checkpoint. Your YOLO run's checkpoints and metrics should appear in your `src/yolo/runs/segment` folder.
 
-# IInference
+# Inference
 
 The recommended entrypoint script for inference is `unified_inference.sh`.  The general pattern for the script is the following: 
 
@@ -127,3 +127,12 @@ source ./unified_inference.sh && INPUT_DIR="data/test_dataset/images" OUTPUT_DIR
 utility_scripts/run_eval_map.sh --submit_dir data/test_dataset/results/YOLO --truth_dir data/test_dataset/ground_truth --output_dir data/test_dataset/metrics/YOLO
 ```
 
+# IMPORTANT: naming convention
+
+The expected naming convention to be followed by all images to take part in the inference process is the following: 
+
+`<video_id>_<frame_number>.<extension>`
+
+- 'video_id' may be any string
+- 'frame_number' must be a zero-padded string with at least 3 digits, but can be longer than three digits (i.e, both '1_002.png' and '1_1132.png' are valid)
+- extension must be either png or jpg
