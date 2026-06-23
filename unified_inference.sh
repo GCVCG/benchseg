@@ -63,7 +63,11 @@ execute_spec() {
       ;;
     xmem2)
       local n_masks="${extra_params[0]:-3}"
-      run_xmem2 "$INPUT_DIR" "$OUTPUT_DIR" "$MASK_DIR" "$n_masks" 
+      run_xmem2 "$INPUT_DIR" "$OUTPUT_DIR" "$MASK_DIR" "$n_masks"
+      ;;
+    sam3)
+      local n_masks="${extra_params[0]:-3}"
+      run_sam3 "$INPUT_DIR" "$OUTPUT_DIR" "$MASK_DIR" "$n_masks"
       ;;
     foodseg_swin_small)
       run_foodseg_swin_small "$INPUT_DIR" "$OUTPUT_DIR"
@@ -556,6 +560,60 @@ for png_file in glob.glob('$input_dir/*.png'):
   # Merge multi-object masks into single binary mask
   merge_masks "$output_dir"
   
+  # Delete unmerged per-object masks
+  find "$output_dir" -name "*_obj*.png" -delete
+}
+
+# Helper: Run SAM3 inference
+run_sam3() {
+  local input_dir="${1:-$INPUT_DIR}"
+  local output_dir="${2:-$OUTPUT_DIR}"
+  local mask_dir="${3:-$MASK_DIR}"
+  local n_masks="${4:-3}"
+
+  mkdir -p "$output_dir"
+
+  # SAM3's loader only accepts .jpg files in directory mode; convert any .png inputs.
+  if compgen -G "$input_dir/*.png" > /dev/null 2>&1; then
+    python3 -c "
+import glob
+from PIL import Image
+for png_file in glob.glob('$input_dir/*.png'):
+    jpg_file = png_file.rsplit('.', 1)[0] + '.jpg'
+    Image.open(png_file).convert('RGB').save(jpg_file, 'JPEG')
+" 2>/dev/null || true
+  fi
+
+  # Pre-create the HF cache dir so Docker doesn't create it as root.
+  mkdir -p "$HOME/.cache/huggingface"
+  # Resolve HF token: prefer env var, fall back to token file from huggingface-cli login.
+  local _hf_token="${HF_TOKEN:-$(cat "$HOME/.cache/huggingface/token" 2>/dev/null || true)}"
+
+  start_gpu_logger "sam3"
+  docker run -it --gpus all --rm --ipc=host \
+    --user "$(id -u):$(id -g)" \
+    -v "$(pwd)/assets:/workspace/assets" \
+    -v "$(pwd)/data:/workspace/data" \
+    -v "$(pwd)/test_runs:/workspace/test_runs" \
+    -v "$(pwd)/src:/workspace/src" \
+    -v "$(pwd)/tracking_models:/workspace/tracking_models" \
+    -v "$HOME/.cache/huggingface:/hf_cache" \
+    -e HF_HOME=/hf_cache \
+    -e HF_TOKEN="${_hf_token}" \
+    -e HOME=/tmp \
+    -e TORCHINDUCTOR_CACHE_DIR=/tmp/torchinductor \
+    sam3 \
+    python /workspace/src/sam3_track_from_mask.py \
+    --video_path "$input_dir" \
+    --mask_dir "$mask_dir" \
+    --n_masks "$n_masks" \
+    --out_dir "$output_dir" \
+    --device cuda
+  stop_gpu_logger
+
+  # Merge multi-object masks into single binary mask
+  merge_masks "$output_dir"
+
   # Delete unmerged per-object masks
   find "$output_dir" -name "*_obj*.png" -delete
 }

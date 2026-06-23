@@ -4,3 +4,6 @@
 [submodule "tracking_models/XMem2"]
 	path = tracking_models/XMem2
 	url = https://github.com/guillermo2077/XMem2_image_save_fix.git
+[submodule "tracking_models/sam3"]
+	path = tracking_models/sam3
+	url = https://github.com/facebookresearch/sam3

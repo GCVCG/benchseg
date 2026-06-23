@@ -72,3 +72,19 @@ services:
     stdin_open: true
     tty: true
 
+  sam3:
+    build:
+      context: ./tracking_models/sam3
+      dockerfile: ../../docker/sam3/Dockerfile
+    image: sam3:latest
+    container_name: spiceseg-sam3
+    volumes:
+      - ./assets:/workspace/assets
+      - ./data:/workspace/data
+      - ./test_runs:/workspace/test_runs
+      - ./src:/workspace/src
+      - ./utility_scripts:/workspace/utility_scripts
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+
