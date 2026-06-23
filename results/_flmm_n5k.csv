@@ -1,0 +1,2 @@
+method,partition,continuity,flicker,drift,sigma,continuity_std,flicker_std,drift_std,sigma_std,n_scenes
+FLMM,N5K,94.9263,7.0188,5.0737,35.1586,8.8079,10.923,8.8079,13.0467,10

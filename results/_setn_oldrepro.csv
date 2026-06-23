@@ -1,0 +1,4 @@
+method,partition,continuity,flicker,drift,sigma,continuity_std,flicker_std,drift_std,sigma_std,n_scenes
+SeTN,MTF,95.557,2.8052,4.443,15.9252,2.9972,4.4841,2.9972,6.8591,13
+SeTN,N5K,98.7917,0.0,1.2083,3.2451,0.3689,0.0,0.3689,0.527,10
+SeTN,VF,94.7024,7.7714,5.2976,39.6257,3.1163,4.587,3.1163,13.4278,4

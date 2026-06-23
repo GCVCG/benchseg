@@ -7,3 +7,7 @@ deliverables/
 __pycache__/
 src/yolo/runs/
 tracking_models/sam2/
+# large data archives / logs (keep code + results only)
+*.gz
+*.zip
+logs_*.log

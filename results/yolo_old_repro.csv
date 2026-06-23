@@ -1,0 +1,4 @@
+method,partition,continuity,flicker,drift,sigma,continuity_std,flicker_std,drift_std,sigma_std,n_scenes
+YOLO,FKIT,86.4238,17.092,13.5762,43.429,4.7408,5.613,4.7408,7.3707,21
+YOLO,MTF,82.0602,20.3403,17.9398,40.6069,10.8425,12.8795,10.8425,12.4331,13
+YOLO,N5K,89.38,14.4308,10.62,30.5656,8.1577,13.0396,8.1577,12.9088,10

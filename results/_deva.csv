@@ -1,0 +1,4 @@
+method,partition,continuity,flicker,drift,sigma,continuity_std,flicker_std,drift_std,sigma_std,n_scenes
+DEVA,MTF,98.9125,0.1548,1.0875,20.7772,1.0059,0.3046,1.0059,3.9016,13
+DEVA,N5K,98.4666,1.3212,1.5334,25.5589,0.6947,1.4511,0.6947,12.7826,10
+DEVA,VF,97.5416,1.839,2.4584,34.3258,2.0243,1.9595,2.0243,10.1788,4

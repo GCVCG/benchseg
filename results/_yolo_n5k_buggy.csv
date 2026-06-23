@@ -1,0 +1,2 @@
+method,partition,continuity,flicker,drift,sigma,continuity_std,flicker_std,drift_std,sigma_std,n_scenes
+YOLO,N5K,89.38,7.615,10.62,19.3339,8.1577,6.5695,8.1577,12.9088,10
