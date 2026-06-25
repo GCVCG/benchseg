@@ -32,7 +32,7 @@ def main():
     ap.add_argument("--img_dir", required=True)
     ap.add_argument("--seed_preds_dir", required=True, help="segmentor masks named <scene>_<frame>.png")
     ap.add_argument("--out_dir", required=True)
-    ap.add_argument("--tracker", required=True, choices=["xmem2", "sam2"])
+    ap.add_argument("--tracker", required=True, choices=["xmem2", "sam2", "sam3"])
     ap.add_argument("--n_seed", type=int, default=1)
     ap.add_argument("--venv_py", required=True, help="path to tracker venv python")
     ap.add_argument("--tracker_dir", required=True, help="tracker repo dir")
@@ -97,10 +97,15 @@ def main():
         if a.tracker == "xmem2":
             cmd = [a.venv_py, "process_video.py", "--video", os.path.abspath(fdir),
                    "--masks", os.path.abspath(sdir), "--output", os.path.abspath(odir)]
-        else:
+        elif a.tracker == "sam2":
             cmd = [a.venv_py, os.path.abspath(os.path.join(os.path.dirname(__file__), "sam2_track_from_mask.py")),
                    "--video_path", os.path.abspath(fdir), "--mask_dir", os.path.abspath(sdir),
                    "--out_dir", os.path.abspath(odir), "--checkpoint", a.sam2_ckpt, "--config", a.sam2_cfg,
+                   "--n_masks", "1", "--frame_idx", str(first_seed_idx or 0)]
+        else:  # sam3: checkpoint auto-resolves from the HF cache (load_from_HF)
+            cmd = [a.venv_py, os.path.abspath(os.path.join(os.path.dirname(__file__), "sam3_track_from_mask.py")),
+                   "--video_path", os.path.abspath(fdir), "--mask_dir", os.path.abspath(sdir),
+                   "--out_dir", os.path.abspath(odir),
                    "--n_masks", "1", "--frame_idx", str(first_seed_idx or 0)]
         r = subprocess.run(cmd, cwd=a.tracker_dir, capture_output=True, text=True)
         if r.returncode != 0:
