@@ -143,7 +143,7 @@
 %% Abstract
 \begin{abstract}
 %% Text of abstract
-Food image segmentation is a critical task for dietary analysis, enabling accurate estimation of food volume and nutrients. However, current methods suffer from limited multi-view data and poor generalization to new viewpoints. We introduce BenchSeg, a novel multi-view food video segmentation dataset and benchmark. BenchSeg aggregates 55 dish scenes (from Nutrition5k, Vegetables \& Fruits, MetaFood3D, and FoodKit) with 25,284 meticulously annotated frames, capturing each dish under free 360° camera motion. We evaluate a diverse set of 20 state-of-the-art segmentation models (e.g., SAM-based, transformer, CNN, and large multimodal) on the existing FoodSeg103 dataset and evaluate them (alone and combined with video-memory modules) on BenchSeg. Quantitative and qualitative results demonstrate that while standard image segmenters degrade sharply under novel viewpoints, memory-augmented methods maintain temporal consistency across frames. \change{Our strongest configuration combines SeTR-MLA with XMem2 (reported as \texttt{FoodMem}), reaching $92.91$\% mAP and $90.02$\% IoU averaged over the four partitions with best-in-class temporal stability. We further show that finetuning a single-frame segmenter on FoodSeg103 markedly improves cross-view robustness: a FoodSeg103-finetuned SegMAN raises mean foreground IoU from $32$--$39$\% (off-the-shelf ADE/COCO weights) to $82.2$\%, and combined with XMem2 reaches $89.2$\% mean IoU, offering new insights into food segmentation and tracking for dietary analysis.} In addition to frame-wise spatial accuracy, we introduce a dedicated temporal evaluation protocol that explicitly quantifies segmentation stability over time through continuity, flicker rate, and IoU drift metrics. This allows us to reveal failure modes that remain invisible under standard per-frame evaluations. We release BenchSeg to foster future research. The project page including the dataset annotations and the food segmentation models can be found at \footnote{https://amughrabi.github.io/benchseg}.
+Food image segmentation is a critical task for dietary analysis, enabling accurate estimation of food volume and nutrients. However, current methods suffer from limited multi-view data and poor generalization to new viewpoints. We introduce BenchSeg, a novel multi-view food video segmentation dataset and benchmark. BenchSeg aggregates 55 dish scenes (from Nutrition5k, Vegetables \& Fruits, MetaFood3D, and FoodKit) with 25,284 meticulously annotated frames, capturing each dish under free 360° camera motion. We evaluate a diverse set of state-of-the-art segmentation models (e.g., SAM-based, transformer, CNN, and large multimodal) on the existing FoodSeg103 dataset and benchmark \change{$35$ configurations} (each segmenter alone and combined with video-memory modules) on BenchSeg. Quantitative and qualitative results demonstrate that while standard image segmenters degrade sharply under novel viewpoints, memory-augmented methods maintain temporal consistency across frames. \change{Our strongest configuration pairs SeTR-MLA with the SAM3 memory module (\texttt{SeTM+S3}), reaching $93.30$\% mAP averaged over the four partitions, narrowly ahead of the SeTR-MLA+XMem2 pipeline (\texttt{FoodMem}, $92.91$\% mAP) which leads on Recall ($95.22$\%), IoU ($90.02$\%) and temporal stability. We further show that finetuning a single-frame segmenter on FoodSeg103 markedly improves cross-view robustness: a FoodSeg103-finetuned SegMAN raises mean foreground IoU from $32$--$39$\% (off-the-shelf ADE/COCO weights) to $82.2$\%, and combined with XMem2 reaches $89.2$\% mean IoU, offering new insights into food segmentation and tracking for dietary analysis.} In addition to frame-wise spatial accuracy, we introduce a dedicated temporal evaluation protocol that explicitly quantifies segmentation stability over time through continuity, flicker rate, and IoU drift metrics. This allows us to reveal failure modes that remain invisible under standard per-frame evaluations. We release BenchSeg to foster future research. The project page including the dataset annotations and the food segmentation models can be found at \footnote{https://amughrabi.github.io/benchseg}.
 \end{abstract}
 
 %%Graphical abstract
@@ -177,7 +177,7 @@ Food image segmentation is a critical task for dietary analysis, enabling accura
 \begin{highlights}
     \item \textbf{BenchSeg}: a multi-scene food video segmentation benchmark with \textbf{25,284} frames.
     \item Diverse camera motions enable rigorous cross-dataset generalization analysis.
-    \item 20 state-of-the-art models are evaluated under a unified protocol.
+    \item \change{$35$ configurations} (state-of-the-art segmenters, alone and combined with video-memory modules) are evaluated under a unified protocol.
     \item Results show strong performance drops under unseen viewpoints and motions.
     \item Hybrid segmentation–tracking models achieve the best temporal stability.
 \end{highlights}
@@ -503,7 +503,7 @@ A subset of 4,000 frames ($\approx$ 16\% of the corpus) was independently labele
 
 \section{Experimental Results}
 \label{sec:experimental_results}
-We train 20 state-of-the-art models on FoodSeg103 and evaluate them on BenchSeg, specifying essential details for the subset of the BenchSeg dataset. The evaluation reported here quantifies segmentation quality and computational cost for all tested methods on the BenchSeg partitions. We report per-partition average precision $\mathrm{mAP}$ and Recall together with model size, runtime (speed), and peak memory usage. Table~\ref{tab:results} contains the complete results for the N5k, V\&F, MTF and FKit partitions.
+We train state-of-the-art segmentation models on FoodSeg103 and evaluate \change{$35$ configurations} (each segmenter alone and combined with training-free video-memory modules) on BenchSeg, specifying essential details for the subset of the BenchSeg dataset. The evaluation reported here quantifies segmentation quality and computational cost for all tested methods on the BenchSeg partitions. We report per-partition average precision $\mathrm{mAP}$ and Recall together with model size, runtime (speed), and peak memory usage. Table~\ref{tab:results} contains the complete results for the N5k, V\&F, MTF and FKit partitions.
 
 
 \subsection{BenchSeg: Dataset Analysis}
@@ -1842,7 +1842,7 @@ Taken together, Tables~\ref{tab:temporal_styled} and~\ref{tab:temporal_grouped_m
 
 
 \subsection{Ablation study}
-\change{Beyond the number of candidate masks, we isolate the incremental contribution of the temporal-propagation module itself. Table~\ref{tab:temporal_module_ablation} contrasts each per-frame segmenter against the same segmenter coupled with a memory/propagation module, using the mean mAP across the four BenchSeg partitions from Table~\ref{tab:results}. Adding temporal propagation improves mean mAP for every segmenter family, and the gain is largest for the weakest per-frame segmenter (YOLO, $+15.81$), directly supporting our central claim that temporal propagation partially compensates for poor single-frame predictions.}
+\change{Beyond the number of candidate masks, we isolate the incremental contribution of the temporal-propagation module itself. Table~\ref{tab:temporal_module_ablation} contrasts each per-frame segmenter against the same segmenter coupled with a memory/propagation module, using the mean mAP across the four BenchSeg partitions from Table~\ref{tab:results}. Adding temporal propagation improves mean mAP for every segmenter family, and the gain is largest for the weakest per-frame segmenters (SegMan $+25.09$ with SAM3, YOLO $+22.57$ with SAM3), while the already-strong SeTR-MLA gains little ($+0.99$ with SAM3, $+0.60$ with XMem2); for the FoodSeg103-finetuned SegMan-FT, XMem2 adds $+4.11$. This directly supports our central claim that temporal propagation partially compensates for poor single-frame predictions.}
 
 \begin{table}[t]
 \centering
@@ -1854,17 +1854,18 @@ Taken together, Tables~\ref{tab:temporal_styled} and~\ref{tab:temporal_grouped_m
 \toprule
 \textbf{Segmenter} & \textbf{+ Temporal module} & \textbf{Seg. alone} & \textbf{+ Module} \\
 \midrule
-SegMAN    & + XMem2 (Seg+X2)  & 88.25 & \textbf{92.21} \\
-\rowcolor{gray!12}SegMAN    & + SAM2  (Seg+S2)  & 88.25 & 90.96 \\
-SeTR-MLA  & + XMem2 (FoodMem) & 89.40 & \textbf{93.21} \\
-\rowcolor{gray!12}YOLO      & + XMem2 (Y+X2)    & 65.67 & \textbf{81.49} \\
+SeTR-MLA  & + SAM3 (SeTM+S3)   & 92.31 & \textbf{93.30} \\
+\rowcolor{gray!12}SeTR-MLA  & + XMem2 (FoodMem)  & 92.31 & 92.91 \\
+SegMan    & + SAM3 (Seg+S3)    & 47.32 & \textbf{72.41} \\
+\rowcolor{gray!12}SegMan-FT & + XMem2 (SF+X2)    & 87.98 & \textbf{92.09} \\
+YOLO      & + SAM3 (Y+S3)      & 66.87 & \textbf{89.44} \\
 \bottomrule
 \end{tabular}
 
 \vspace{2pt}
 \raggedright
 \footnotesize
-\change{Mean over \{FKit, N5k, V\&F, MTF\}. The temporal-propagation gain ranges from $+2.71$ (SegMAN+SAM2) to $+15.81$ (YOLO+XMem2) mean mAP.}
+\change{Mean over \{FKit, N5k, V\&F, MTF\}. The temporal-propagation gain ranges from $+0.60$ (SeTR-MLA+XMem2) to $+25.09$ (SegMan+SAM3) mean mAP.}
 \end{table}
 
 To further investigate the factors underlying the efficacy of memory‑tracking segmentation models, we conducted a controlled ablation study in which we varied the number of candidate masks produced by the segmenter (e.g., SegMan), setting the mask count ($M$) to 1, 3, 6, or 9. We assessed the effect of this variation in two complementary ways. First, a qualitative evaluation provides visual comparisons of the resulting masks (see Table ~\ref{tab:3d_comparisons_tracker_2d}). Second, a quantitative evaluation reports segmentation quality using mAP and Recall (see Table ~\ref{tab:masks_ablation}), precision, F1, IoU, and Accuracy scores as shown in the Table.~\ref{tab:masks_ablation_additional}. Fig.~\ref{fig:metrics_comparasions_ablation} summarizes the ablation performance of all baselines across datasets, reporting Precision, F1 score, IoU, and Accuracy for each method and mask count ($M$).
@@ -2151,7 +2152,7 @@ The code, model configuration files, and evaluation scripts will be released at:
 BenchSeg comprises images depicting food scenes that may feature human hands or personal environments. The datasets utilized as sources were gathered in accordance with their respective ethical guidelines. We do not incorporate any personally identifiable information. Users engaging with the benchmark are expected to adhere to the original dataset licenses and relevant ethical standards.
 
 \section{Conclusions and Future Work}
-We introduced BenchSeg, a large-scale dataset and benchmark for evaluating food segmentation models under realistic multi-view free-motion conditions in food videos. BenchSeg is developed using 25,284 richly annotated frames and trained strictly out-of-domain with FoodSeg103 to emphasize cross-dataset generalization and robustness. By leveraging robust per-frame segmentors combined with temporal-aware propagation mechanisms, our extensive experiments and empirical results demonstrate significant performance variations across 20 state-of-the-art segmentation architectures. We emphasized the critical importance of temporal consistency for reliable food-region prediction and observed that, when combined with temporal-aware propagation methods, low-performance food segmentors can achieve competitive results with stronger segmentors, although cross-dataset generalization remains challenging.
+We introduced BenchSeg, a large-scale dataset and benchmark for evaluating food segmentation models under realistic multi-view free-motion conditions in food videos. BenchSeg is developed using 25,284 richly annotated frames and trained strictly out-of-domain with FoodSeg103 to emphasize cross-dataset generalization and robustness. By leveraging robust per-frame segmentors combined with temporal-aware propagation mechanisms, our extensive experiments and empirical results demonstrate significant performance variations across \change{$35$ evaluated configurations}. We emphasized the critical importance of temporal consistency for reliable food-region prediction and observed that, when combined with temporal-aware propagation methods, low-performance food segmentors can achieve competitive results with stronger segmentors, although cross-dataset generalization remains challenging.
 Beyond spatial accuracy, our analysis demonstrates that temporal stability varies significantly across methods. The proposed metrics provide a complementary diagnostic tool that exposes instability patterns invisible to frame-wise evaluations, offering more realistic insight into real-world deployment behavior.
 Looking ahead, future work should focus on designing more efficient and scalable hybrid memory modules suitable for real-time inference and on expanding BenchSeg to more unconstrained dining scenarios—multi-dish scenes, clutter, and challenging illumination. These directions are essential for advancing more practical, accurate, and deployable food-understanding systems.
 
@@ -2347,7 +2348,7 @@ In Fig.~\ref{fig:capturing-patterns}, each pattern presents distinct advantages:
 
 \subsection{Baselines architectural design}
 \label{sec:baselines_architectural_design}
-In this section, we briefly discuss the 20 state-of-the-art models and their architectures. All of the baseline models were trained on the FoodSeg103 dataset and evaluated on the BenchSeg dataset. 
+In this section, we briefly discuss the state-of-the-art segmentation models and their architectures, \change{which yield $35$ configurations on BenchSeg when combined with the video-memory modules}. All of the baseline segmenters were trained on the FoodSeg103 dataset and evaluated on the BenchSeg dataset. 
 
 \paragraph{FoodMem \cite{he2024metafood}} is a two-phase deep learning framework designed for accurate and near-real-time segmentation and tracking of food items in video sequences. The architecture decouples the problem into (1) a transformer-based segmentation module that generates initial high-quality mask predictions for food regions on a per-frame basis using a segmentation transformer backbone, and (2) a memory-augmented tracking module that propagates and refines these masks temporally across subsequent video frames by maintaining a learned spatio-temporal memory of object appearances and positions, thereby ensuring temporal coherence and minimizing flicker artifacts common in frame-by-frame segmentation. The memory component stores intermediate mask features and leverages them to guide consistent mask tracking under variations in camera motion, lighting, and scene complexity, effectively bridging the gap between single-image segmentation and continuous video segmentation. By combining transformer-based representation learning with a memory-based temporal association mechanism, FoodMem achieves substantial improvements in segmentation stability, accuracy, and inference speed compared to existing state-of-the-art models, while requiring minimal hardware resources for real-time operation as shown in Fig.~\ref{fig:baseline_foodmem}.
 \begin{figure}[htb]
