@@ -1,0 +1,13 @@
+metric,gamma,delta,spearman_rho_vs_default,n_methods
+continuity,gamma=0.40,delta=0.20,0.9969,35
+continuity,gamma=0.45,delta=0.20,0.9969,35
+continuity,gamma=0.50,delta=0.20,1.0000,35
+continuity,gamma=0.55,delta=0.20,0.9978,35
+continuity,gamma=0.60,delta=0.20,0.9922,35
+continuity,gamma=0.65,delta=0.20,0.9888,35
+continuity,gamma=0.70,delta=0.20,0.9860,35
+flicker,gamma=0.50,delta=0.10,0.9801,35
+flicker,gamma=0.50,delta=0.15,0.9952,35
+flicker,gamma=0.50,delta=0.20,1.0000,35
+flicker,gamma=0.50,delta=0.25,0.9891,35
+flicker,gamma=0.50,delta=0.30,0.9720,35

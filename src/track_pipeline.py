@@ -34,6 +34,9 @@ def main():
     ap.add_argument("--out_dir", required=True)
     ap.add_argument("--tracker", required=True, choices=["xmem2", "sam2", "sam3"])
     ap.add_argument("--n_seed", type=int, default=1)
+    ap.add_argument("--seed_select", choices=["first", "random"], default="first",
+                    help="which n_seed non-empty frames to seed from: the first M, or M random (same budget)")
+    ap.add_argument("--seed_rng", type=int, default=0, help="base RNG seed for --seed_select random")
     ap.add_argument("--venv_py", required=True, help="path to tracker venv python")
     ap.add_argument("--tracker_dir", required=True, help="tracker repo dir")
     ap.add_argument("--xmem_ckpt", default="saves/XMem.pth")
@@ -66,19 +69,25 @@ def main():
         for i, (frame, base, f) in enumerate(frames):
             idx_to_base[i] = base
             Image.open(os.path.join(a.img_dir, f)).convert("RGB").save(os.path.join(fdir, f"{i}.jpg"))
-        # seed from the first n_seed frames whose predicted mask is NON-empty
-        n_seeded, first_seed_idx = 0, None
+        # candidate seed frames = those with a NON-empty predicted mask (in frame order)
+        candidates = []  # (i, mask_uint8)
         for i, (frame, base, f) in enumerate(frames):
-            if n_seeded >= a.n_seed:
-                break
             sp = os.path.join(a.seed_preds_dir, base + ".png")
             if os.path.exists(sp):
                 m = (np.array(Image.open(sp).convert("L")) > 0).astype(np.uint8) * 255
                 if m.any():
-                    Image.fromarray(m).save(os.path.join(sdir, f"{i}.png"))
-                    n_seeded += 1
-                    if first_seed_idx is None:
-                        first_seed_idx = i
+                    candidates.append((i, m))
+        # select n_seed of them: the first M, or M random within the same budget
+        if a.seed_select == "random" and len(candidates) > a.n_seed:
+            # per-scene deterministic RNG so the draw is reproducible across reruns
+            rng = np.random.default_rng(a.seed_rng * 1_000_003 + (hash(str(scene)) & 0xFFFFFFFF))
+            pick = sorted(rng.choice(len(candidates), size=a.n_seed, replace=False).tolist())
+            chosen = [candidates[k] for k in pick]
+        else:
+            chosen = candidates[:a.n_seed]
+        first_seed_idx = chosen[0][0] if chosen else None
+        for i, m in chosen:
+            Image.fromarray(m).save(os.path.join(sdir, f"{i}.png"))
 
         def fill_empty():
             # write all-zero masks for frames with no output (so the scene is complete)
