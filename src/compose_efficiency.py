@@ -35,11 +35,13 @@ base = load(f"{R}/efficiency_baselines.csv")    # method -> [method,speed,vram,n
 # published fallbacks (params_M, speed_ms, vram_MB) for methods we can't re-measure
 PUB = {
     "FLMM": (7706.0, 5500.0, 14131.0),
-    "FoodMem": (785.0, 25000.0, 6400.0),
     "FSAM": (636.0, 1353000.0, 12800.0),
     "BiRefNet": (220.18, None, None),  # params published; speed/VRAM measured (job 1478)
     "DEVA": (241.0, None, None),       # params published; speed/VRAM measured
 }
+# NOTE: in this benchmark "FoodMem" IS the SeTR-MLA seed + XMem2 pipeline
+# (combos.sbatch), byte-identical to SeTM+X2; its efficiency is therefore the
+# composed seed+tracker value, not the published FoodSAM+XMem numbers.
 TRK = {"xmem2": "XMem2", "sam2": "SAM2", "sam3": "SAM3"}
 
 
@@ -58,6 +60,7 @@ STD = {"YOLO": "YOLO", "SeTN": "SETR_Naive", "SETR_MLA": "SETR_MLA_L384",
 HYB = {"Y+X2": ("YOLO", "xmem2"), "Y+S2": ("YOLO", "sam2"), "Y+S3": ("YOLO", "sam3"),
        "S+X2": ("SegMan_ADE", "xmem2"), "Seg+S2": ("SegMan_ADE", "sam2"), "Seg+S3": ("SegMan_ADE", "sam3"),
        "SC+X2": ("SegMan_COCO", "xmem2"), "SC+S2": ("SegMan_COCO", "sam2"), "SC+S3": ("SegMan_COCO", "sam3"),
+       "FoodMem": ("SETR_MLA_L384", "xmem2"),  # FoodMem == SeTR-MLA + XMem2 here
        "SeTM+S2": ("SETR_MLA_L384", "sam2"), "SeTM+S3": ("SETR_MLA_L384", "sam3"),
        "SF+X2": ("SegMan_FS", "xmem2"), "SF+S2": ("SegMan_FS", "sam2"), "SF+S3": ("SegMan_FS", "sam3"),
        "FLMM+X2": ("FLMM", "xmem2"), "FLMM+S2": ("FLMM", "sam2"), "FLMM+S3": ("FLMM", "sam3")}

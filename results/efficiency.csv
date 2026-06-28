@@ -10,7 +10,7 @@ FLMM+S3,8567.24,1096.3,14131,composed(seed+tracker)
 FLMM+X2,7768.22,541.5,14131,composed(seed+tracker)
 FPN-Re,28.49,78.0,4512,measured
 FSAM,636.0,1353000.0,12800,published
-FoodMem,785.0,25000.0,6400,published
+FoodMem,373.72,541.5,9368,composed(seed+tracker)
 S+X2,114.02,541.5,4510,composed(seed+tracker)
 SC+S2,276.26,559.3,4880,composed(seed+tracker)
 SC+S3,913.05,1096.3,6268,composed(seed+tracker)
