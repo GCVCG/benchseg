@@ -1,0 +1,6 @@
+method,speed_ms_img,vram_MB,nframes
+kMean++,117,1,58
+BiRefNet,130,3066,58
+DEVA,1512,8570,58
+FLMM,1077,18086,58
+DoraemonGPT,1522,6158,58

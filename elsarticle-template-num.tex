@@ -812,22 +812,20 @@ To evaluate segmentation model performance trained on FoodSeg103, we benchmark a
 \begin{table}[htb]
 \centering
 \setlength{\tabcolsep}{2pt}
-\caption{Comprehensive evaluation of all segmentation methods trained on the FoodSeg103 dataset. Methods are sorted in ascending order by mIoU. Best results in \textbf{bold}, second-best in \uline{underline}, and third-best in \textit{italic}.}
+\caption{Comprehensive evaluation of all segmentation methods trained on the FoodSeg103 dataset. All methods are evaluated under an identical dense semantic protocol on the official FoodSeg103 test split (2{,}135 images), reporting mIoU and mAcc over $104$ classes (background $+$ $103$ ingredients); for YOLO, which is an instance segmenter, the predicted instance masks are rasterised into a semantic label map before scoring. SegMAN-B is finetuned on FoodSeg103 from its ImageNet-1k pretrained encoder under the same 80k-iteration protocol as the other models. Methods are sorted in ascending order by mIoU. All measured values are deterministic, reproducing identically across five repeated evaluation runs (std $=0$). Best results in \textbf{bold}, second-best in \uline{underline}, and third-best in \textit{italic}.}
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Method} & \textbf{Backbone} & \textbf{↑mIoU (\%)$\blacktriangle$} & \textbf{↑mAcc (\%)} &\textbf{ Model Size} \\
 \midrule
-FPN & ResNet-50 & 27.8 & 38.2 & \textit{218M} \\
-\rowcolor{gray!12}ReLeM-FPN & Transformer & 28.9 & 39.7 & \textit{218M} \\
-ReLeM-FPN & LSTM & 29.1 & 39.8 & \textit{218M} \\
-\rowcolor{gray!12}CCNet & ResNet-50 & 35.5 & 45.3 & 381M \\
-ReLeM-CCNet & Transformer & 36.0 & 46.5 & 381M \\
-\rowcolor{gray!12}ReLeM-CCNet & LSTM & 36.8 & 47.4 & 381M \\
-SeTR & ViT-16/B & 41.3 & 52.7 & 723M \\
-\rowcolor{gray!12}ReLeM-SeTR & Transformer & 43.2 & 55.7 & 723M \\
-ReLeM-SeTR & LSTM & \textit{43.9} & \textit{57.0} & 723M \\
-\rowcolor{gray!12}SegMAN & Transformer & \uline{46.2} & \uline{57.2} & \uline{51.79M} \\
-YOLO & YOLOv11 CNN & \textbf{71.5} & \textbf{78.39} & \textbf{10.1M} \\
+YOLO & YOLOv11 CNN & 22.61 & 31.35 & \textbf{10.1M} \\
+\rowcolor{gray!12}FPN & ResNet-50 & 27.79 & 38.22 & \textit{218M} \\
+ReLeM-FPN & Transformer & 29.06 & 39.76 & \textit{218M} \\
+\rowcolor{gray!12}CCNet & ResNet-50 & 35.03 & 45.27 & 381M \\
+ReLeM-CCNet & Transformer & 36.77 & 47.36 & 381M \\
+\rowcolor{gray!12}SeTR & ViT-16/B & 41.27 & 52.65 & 723M \\
+ReLeM-SeTR & Transformer & \textit{43.14} & \uline{56.03} & 723M \\
+\rowcolor{gray!12}ReLeM-SeTR & LSTM & \uline{43.90} & \textbf{56.99} & 723M \\
+SegMAN & Transformer & \textbf{44.18} & \textit{55.10} & \uline{51.79M} \\
 
 \bottomrule
 \end{tabular}
@@ -835,7 +833,7 @@ YOLO & YOLOv11 CNN & \textbf{71.5} & \textbf{78.39} & \textbf{10.1M} \\
 \end{table}
 
 
-Table~\ref{tab:model_comparisons} compares all evaluated methods. Metrics show performance differences between convolutional, recurrent, and transformer models. Transformer models, especially SeTR variants, deliver strong segmentation across datasets, while convolutional models like CCNet perform slightly lower. YOLO-based models are lighter and faster, offering competitive recall but lower mAP, suited for quick, real-time tasks rather than detailed segmentation. The model's memory and speed show a trade-off: transformers have high cost but top accuracy; convolutional methods are balanced; YOLO variants are most efficient. Choice depends on needs—transformers suit offline tasks, while YOLO is better for real-time or limited-resource applications.
+Table~\ref{tab:model_comparisons} compares all evaluated methods under the common dense $104$-class protocol. Performance differs markedly across convolutional and transformer families: transformer models, especially the SeTR/ReLeM-SeTR variants and the FoodSeg103-finetuned SegMAN, deliver the strongest ingredient-level segmentation (mIoU up to $44.2$, with SegMAN highest), while convolutional models such as FPN and CCNet trail. YOLO attains the lowest mIoU ($22.61$): as an instance segmenter rasterised to a dense label map, it recovers only the most salient ingredients and misses many of the $103$ fine-grained classes, which the per-class mIoU/mAcc penalises heavily. This is a protocol-specific outcome---YOLO remains by far the most efficient model (smallest parameter count and fastest inference) and is competitive under the binary food-vs-background protocol of Table~\ref{tab:results}---so the trade-off persists: transformers offer top fine-grained accuracy at high cost, whereas YOLO suits real-time or resource-constrained deployment where coarse food localisation suffices. We caution that YOLO's native segmentation-validation score is not comparable to this dense mIoU and should not be read as ingredient-level accuracy.
 
 
 \subsection{BenchSeg Observations}

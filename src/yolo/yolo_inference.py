@@ -24,7 +24,10 @@ def instance2semantic(r, background_id: int = 0, out_dtype: np.dtype = np.uint8,
     # Sort so high-confidence FIRST (so they claim pixels earliest)
     order = torch.argsort(confs, descending=True)
 
-    # Reserve 0 or given class for background 
+    # Reserve 0 or given class for background. The FoodSeg103 YOLO checkpoint
+    # predicts 0-indexed food classes (0..102), while the GT ann ids are 1..103
+    # with 0=background, so a +1 offset aligns predictions to the GT label space
+    # (verified empirically: GT id == predicted cls + 1).
     class_offset = 1 if (offset_classes and background_id == 0) else 0
 
     # Init canvas on same device as masks
