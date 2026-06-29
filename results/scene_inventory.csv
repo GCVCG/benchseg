@@ -1,0 +1,49 @@
+partition,scene,category,n_frames
+N5k,1,Plated multi-ingredient meal,64
+N5k,2,Plated multi-ingredient meal,61
+N5k,3,Plated multi-ingredient meal,63
+N5k,4,Plated multi-ingredient meal,63
+N5k,5,Plated multi-ingredient meal,61
+N5k,6,Plated multi-ingredient meal,65
+N5k,7,Plated multi-ingredient meal,60
+N5k,8,Plated multi-ingredient meal,63
+N5k,9,Plated multi-ingredient meal,63
+N5k,10,Plated multi-ingredient meal,58
+MTF,1,Tray multi-ingredient meal,199
+MTF,2,Tray multi-ingredient meal,200
+MTF,3,Tray multi-ingredient meal,200
+MTF,4,Tray multi-ingredient meal,200
+MTF,5,Tray multi-ingredient meal,200
+MTF,6,Tray multi-ingredient meal,200
+MTF,7,Tray multi-ingredient meal,200
+MTF,8,Tray multi-ingredient meal,200
+MTF,9,Tray multi-ingredient meal,30
+MTF,10,Tray multi-ingredient meal,30
+MTF,11,Tray multi-ingredient meal,30
+MTF,13,Tray multi-ingredient meal,30
+MTF,14,Tray multi-ingredient meal,30
+V&F,apple,Fruit,201
+V&F,avocado,Fruit,172
+V&F,banana,Fruit,232
+V&F,blackberry,Fruit,157
+FKit,aguacate,Fruit,1078
+FKit,apple,Fruit,1005
+FKit,apple_pie,Baked/Pastry,1201
+FKit,banana,Fruit,1156
+FKit,capsicum,Vegetable,881
+FKit,chocolate_bomb,Baked/Pastry,1111
+FKit,chocolate_cake,Baked/Pastry,781
+FKit,chocolate_croissant,Baked/Pastry,1122
+FKit,donut,Baked/Pastry,780
+FKit,durum,Baked/Pastry,1006
+FKit,empanadilla,Savory/Fried,926
+FKit,falafel,Savory/Fried,929
+FKit,french_bread,Baked/Pastry,1139
+FKit,lemon,Fruit,887
+FKit,mini_chocolate_panettone,Baked/Pastry,1209
+FKit,napolitanas,Baked/Pastry,1071
+FKit,orange,Fruit,1001
+FKit,paxoco_mini,Baked/Pastry,911
+FKit,pear,Fruit,849
+FKit,samosa,Savory/Fried,848
+FKit,yellow_cane,Fruit,715

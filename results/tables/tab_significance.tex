@@ -1,0 +1,19 @@
+\begin{table}[htb]
+\centering
+\footnotesize
+\caption{\change{Paired significance tests for the headline comparisons over the $48$ scenes. Each cell reports the mean per-scene difference $A\!-\!B$ and the paired two-sided Wilcoxon signed-rank $p$-value; ${}^{*}$ marks $p<0.05$. Positive favours $A$. mAP${}=$precision for the binary mask.}}
+\label{tab:significance}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Comparison ($A$ vs.\ $B$)} & \textbf{mAP} & \textbf{Recall} & \textbf{IoU} \\
+\midrule
+SeTM+S3 vs.\ FoodMem & +0.49 (0.390) & -1.16$^{*}$ (0.002) & -1.24$^{*}$ (<0.001) \\
+FoodMem vs.\ SeTR-MLA & +0.09$^{*}$ (0.001) & +2.82$^{*}$ (<0.001) & +3.52$^{*}$ (<0.001) \\
+SeTM+S3 vs.\ SeTR-MLA & +0.58$^{*}$ (<0.001) & +1.67$^{*}$ (<0.001) & +2.29$^{*}$ (<0.001) \\
+SF+X2 vs.\ SegMan-FT & +5.36$^{*}$ (<0.001) & +5.64$^{*}$ (<0.001) & +9.18$^{*}$ (<0.001) \\
+Seg+S3 vs.\ SegMan & +27.84$^{*}$ (<0.001) & +3.66 (0.066) & +10.19$^{*}$ (0.007) \\
+Y+S3 vs.\ YOLO & +23.78$^{*}$ (<0.001) & +22.02$^{*}$ (<0.001) & +22.68$^{*}$ (<0.001) \\
+FoodMem vs.\ BiRefNet & +11.88$^{*}$ (0.014) & -2.29$^{*}$ (0.023) & +9.93$^{*}$ (<0.001) \\
+\bottomrule
+\end{tabular}
+\end{table}
