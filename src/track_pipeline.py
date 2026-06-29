@@ -40,6 +40,8 @@ def main():
     ap.add_argument("--venv_py", required=True, help="path to tracker venv python")
     ap.add_argument("--tracker_dir", required=True, help="tracker repo dir")
     ap.add_argument("--xmem_ckpt", default="saves/XMem.pth")
+    ap.add_argument("--xmem_max_mid", type=int, default=None, help="XMem2 max_mid_term_frames (working memory size); None=default 10")
+    ap.add_argument("--xmem_mem_every", type=int, default=None, help="XMem2 mem_every (memory update interval); None=default 5")
     ap.add_argument("--sam2_ckpt", default="")
     ap.add_argument("--sam2_cfg", default="configs/sam2.1/sam2.1_hiera_l.yaml")
     ap.add_argument("--tmp_root", default="data/_track_tmp")
@@ -65,10 +67,12 @@ def main():
             shutil.rmtree(d, ignore_errors=True)
             os.makedirs(d)
         # lay out all frames with integer names (works for both XMem2 and SAM2)
+        # zero-pad names so XMem2/SAM's sorted(os.listdir()) keeps numeric frame order
+        # (unpadded "10.jpg" sorts before "2.jpg" and breaks multi-seed mask matching)
         idx_to_base = {}
         for i, (frame, base, f) in enumerate(frames):
             idx_to_base[i] = base
-            Image.open(os.path.join(a.img_dir, f)).convert("RGB").save(os.path.join(fdir, f"{i}.jpg"))
+            Image.open(os.path.join(a.img_dir, f)).convert("RGB").save(os.path.join(fdir, f"frame_{i:06d}.jpg"))
         # candidate seed frames = those with a NON-empty predicted mask (in frame order)
         candidates = []  # (i, mask_uint8)
         for i, (frame, base, f) in enumerate(frames):
@@ -87,7 +91,7 @@ def main():
             chosen = candidates[:a.n_seed]
         first_seed_idx = chosen[0][0] if chosen else None
         for i, m in chosen:
-            Image.fromarray(m).save(os.path.join(sdir, f"{i}.png"))
+            Image.fromarray(m).save(os.path.join(sdir, f"frame_{i:06d}.png"))
 
         def fill_empty():
             # write all-zero masks for frames with no output (so the scene is complete)
@@ -106,6 +110,10 @@ def main():
         if a.tracker == "xmem2":
             cmd = [a.venv_py, "process_video.py", "--video", os.path.abspath(fdir),
                    "--masks", os.path.abspath(sdir), "--output", os.path.abspath(odir)]
+            if a.xmem_max_mid is not None:
+                cmd += ["--max_mid_term_frames", str(a.xmem_max_mid)]
+            if a.xmem_mem_every is not None:
+                cmd += ["--mem_every", str(a.xmem_mem_every)]
         elif a.tracker == "sam2":
             cmd = [a.venv_py, os.path.abspath(os.path.join(os.path.dirname(__file__), "sam2_track_from_mask.py")),
                    "--video_path", os.path.abspath(fdir), "--mask_dir", os.path.abspath(sdir),
