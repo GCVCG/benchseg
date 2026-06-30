@@ -1,0 +1,26 @@
+\begin{table}[htb]
+\centering
+\footnotesize
+\caption{\change{Mask-count ablation: number of seed masks $M$ and the seed-selection strategy (first $M$ frames vs.\ $M$ random frames within the same budget), for the three XMem2 hybrids. Mean mAP (\%) over the four partitions; random reports mean$\pm$std over three draws. $M{=}1$ first is the base hybrid. Best per combo in \textbf{bold}.}}
+\label{tab:masks_ablation}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Combination} & \textbf{$M$} & \textbf{first} & \textbf{random} \\
+\midrule
+YOLO+XMem2 & 1 & 87.07 & $84.76\pm1.66$ \\
+ & 3 & \textbf{90.97} & $90.31\pm0.92$ \\
+ & 6 & \uline{90.08} & $90.92\pm0.61$ \\
+ & 9 & \textit{88.74} & $89.57\pm0.36$ \\
+\midrule
+SegMan+XMem2 & 1 & 60.41 & $64.14\pm4.34$ \\
+ & 3 & \uline{66.12} & $68.90\pm0.94$ \\
+ & 6 & \textbf{67.27} & $69.82\pm1.08$ \\
+ & 9 & \textit{65.77} & $72.65\pm1.56$ \\
+\midrule
+SegMan-FT+XMem2 & 1 & \uline{94.26} & $93.05\pm1.22$ \\
+ & 3 & \textit{93.88} & $93.72\pm0.50$ \\
+ & 6 & \textbf{94.37} & $93.70\pm0.87$ \\
+ & 9 & 93.28 & $94.30\pm0.24$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,16 @@
+\begin{table}[htb]
+\centering
+\footnotesize
+\caption{\change{Memory-size ablation: XMem2 working-memory size (\texttt{max\_mid\_term\_frames}) in FoodMem. Mean over the four partitions. Performance is essentially flat across sizes, indicating FoodMem is robust to the working-memory budget.}}
+\label{tab:memory_ablation}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Working memory} & \textbf{mAP} & \textbf{Recall} & \textbf{IoU} \\
+\midrule
+4 & \textit{95.09} & 96.45 & 92.84 \\
+10 (default) & \uline{95.20} & 96.47 & 92.80 \\
+20 & \textbf{95.30} & 96.50 & 92.80 \\
+40 & \textbf{95.30} & 96.48 & 92.80 \\
+\bottomrule
+\end{tabular}
+\end{table}
