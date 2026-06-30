@@ -90,15 +90,24 @@ def build_results(sp, eff):
              for k in ("params_M", "speed_ms_img", "vram_MB")}
     def std(m, p, k):
         r = sp.get(m, {}).get(p); return fnum(r[k]) if r and r.get(k) else "--"
+    def efmt(m):  # manuscript efficiency: params raw, speed->ms, vram->G (unchanged by V&F)
+        r = eff.get(m, {})
+        def g(k):
+            try: return float(r[k])
+            except (TypeError, ValueError, KeyError): return None
+        p, s, v = g("params_M"), g("speed_ms_img"), g("vram_MB")
+        return (f"{p:.1f}" if p is not None else "--",
+                f"{round(s)}ms" if s is not None else "--",
+                f"{v/1000:.1f}G" if v is not None else "--")
     lines = []
     for i, m in enumerate(methods):
-        shade = "\\rowcolor{gray!12}\n" if i % 2 else ""
-        mean = " & ".join([disp(m)] + [cells[("mAP", p)][m] for p in PO]
-                          + [cells[("recall", p)][m] for p in PO]
-                          + [ecell["params_M"][m], ecell["speed_ms_img"][m], ecell["vram_MB"][m]])
+        sh = "\\rowcolor{gray!12}\n" if i % 2 else ""
+        metr = [cells[("mAP", p)][m] for p in PO] + [cells[("recall", p)][m] for p in PO]
+        mean = " & ".join([f"\\multirow[t]{{2}}{{*}}{{{disp(m)}}}"] + metr
+                          + [f"\\multirow[t]{{2}}{{*}}{{{x}}}" for x in efmt(m)])
         sr = " & ".join([""] + [std(m, p, "precision_std") for p in PO]
                         + [std(m, p, "recall_std") for p in PO] + ["", "", ""])
-        lines.append(f"{shade}{mean} \\\\\n {sr} \\\\ \\addlinespace[2pt]")
+        lines.append(f"{sh}{mean} \\\\\n{sh}{sr} \\\\")
     return "\n".join(lines), methods
 
 
@@ -115,12 +124,12 @@ def build_precision(sp, methods):
             cell[(mk, p)] = style_col([(m, val(m, p, mk)) for m in methods], higher=True)
     lines = []
     for i, m in enumerate(methods):
-        shade = "\\rowcolor{gray!12}\n" if i % 2 else ""
-        mean = " & ".join([disp(m)] + [cell[(mk, p)][m] for mk, _ in MET for p in PO])
+        sh = "\\rowcolor{gray!12}\n" if i % 2 else ""
+        mean = " & ".join([f"\\multirow[t]{{2}}{{*}}{{{disp(m)}}}"] + [cell[(mk, p)][m] for mk, _ in MET for p in PO])
         def std(p, sk):
             r = sp.get(m, {}).get(p); return fnum(r[sk]) if r and r.get(sk) else "--"
         sr = " & ".join([""] + [std(p, sk) for _, sk in MET for p in PO])
-        lines.append(f"{shade}{mean} \\\\\n {sr} \\\\ \\addlinespace[3pt]")
+        lines.append(f"{sh}{mean} \\\\\n{sh}{sr} \\\\")
     return "\n".join(lines)
 
 
@@ -141,13 +150,13 @@ def build_temporal(tp):
         cell[(k, "G")] = style_col([(m, g(m, k)) for m in methods], higher=hi, nd=1)
     lines = []
     for i, m in enumerate(methods):
-        shade = "\\rowcolor{gray!12}\n" if i % 2 else ""
-        mean = " & ".join([disp(m)] + [cell[(k, p)][m] for k, _ in MET for p in PO]
+        sh = "\\rowcolor{gray!12}\n" if i % 2 else ""
+        mean = " & ".join([f"\\multirow[t]{{2}}{{*}}{{{disp(m)}}}"] + [cell[(k, p)][m] for k, _ in MET for p in PO]
                           + [cell[(k, "G")][m] for k, _ in MET])
         def std(p, k):
             r = tp.get(m, {}).get(p); return fnum(r[k + "_std"], 1) if r and r.get(k + "_std") else "--"
         sr = " & ".join([""] + [std(p, k) for k, _ in MET for p in PO] + ["", "", "", ""])
-        lines.append(f"{shade}{mean} \\\\\n {sr} \\\\ \\addlinespace[2pt]")
+        lines.append(f"{sh}{mean} \\\\\n{sh}{sr} \\\\")
     return "\n".join(lines)
 
 
