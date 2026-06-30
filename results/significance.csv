@@ -1,22 +1,22 @@
 comparison,A,B,metric,n_scenes,mean_diff_A_minus_B,ci95_low,ci95_high,wilcoxon_p,significant_p<0.05
-"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,mAP,48,0.489,-0.322,1.761,0.3895,no
-"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,recall,48,-1.156,-2.073,-0.435,0.002364,yes
-"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,iou,48,-1.235,-2.184,-0.484,0.0008591,yes
-FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,mAP,48,0.087,-1.930,1.332,0.001052,yes
-FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,recall,48,2.821,1.358,4.101,1.912e-09,yes
-FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,iou,48,3.524,2.081,4.772,1.393e-09,yes
-SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,mAP,48,0.576,-0.279,1.261,0.0005661,yes
-SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,recall,48,1.665,0.386,2.768,2.421e-07,yes
-SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,iou,48,2.289,0.961,3.397,1.923e-08,yes
-"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,mAP,48,5.363,1.159,9.603,6.529e-06,yes
-"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,recall,48,5.641,1.219,11.073,1.211e-07,yes
-"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,iou,48,9.177,4.465,14.511,3.029e-07,yes
-Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,mAP,48,27.845,18.719,36.915,1.489e-06,yes
-Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,recall,48,3.656,-2.808,10.106,0.06563,no
-Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,iou,48,10.188,3.647,16.713,0.00685,yes
-"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,mAP,48,23.778,17.842,30.015,3.908e-13,yes
-"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,recall,48,22.025,15.361,28.876,4.747e-09,yes
-"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,iou,48,22.678,16.471,28.986,1.008e-09,yes
-FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,mAP,48,11.881,5.189,19.262,0.01433,yes
-FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,recall,48,-2.288,-7.504,1.147,0.02341,yes
-FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,iou,48,9.925,1.842,17.806,0.000367,yes
+"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,mAP,55,0.371,-0.351,1.529,0.6211,no
+"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,recall,55,-1.021,-1.852,-0.390,0.006148,yes
+"SeTM+S3 vs FoodMem (headline, indistinguishable?)",SeTM+S3,FoodMem,iou,55,-1.152,-1.948,-0.492,0.0005395,yes
+FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,mAP,55,0.732,-1.180,2.060,7.663e-05,yes
+FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,recall,55,2.641,1.333,3.801,9.505e-09,yes
+FoodMem vs SeTR-MLA (XMem2 memory gain),FoodMem,SETR_MLA,iou,55,3.897,2.549,5.083,5.224e-09,yes
+SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,mAP,55,1.103,0.206,1.969,3.363e-05,yes
+SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,recall,55,1.621,0.484,2.553,1.427e-07,yes
+SeTM+S3 vs SeTR-MLA (SAM3 memory gain),SeTM+S3,SETR_MLA,iou,55,2.746,1.523,3.828,2.403e-08,yes
+"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,mAP,55,4.943,1.289,8.781,1.717e-06,yes
+"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,recall,55,5.247,1.355,9.894,9.015e-08,yes
+"SF+X2 vs SegMan-FT (memory gain, finetuned)",SF+X2,SegMan_FS,iou,55,8.603,4.508,13.426,1.711e-07,yes
+Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,mAP,55,27.939,19.548,36.058,1.802e-07,yes
+Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,recall,55,6.949,0.543,13.300,0.007808,yes
+Seg+S3 vs SegMan (SAM3 memory gain),Seg+S3,SegMan_ADE,iou,55,12.592,6.478,18.657,0.0005462,yes
+"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,mAP,55,23.980,18.782,29.504,2.027e-10,yes
+"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,recall,55,21.083,15.123,27.076,1.409e-08,yes
+"Y+S3 vs YOLO (SAM3 memory gain, weakest seed)",Y+S3,YOLO,iou,55,23.031,17.628,28.616,4.27e-09,yes
+FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,mAP,55,14.515,8.216,21.181,0.0005565,yes
+FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,recall,55,-1.715,-6.319,1.286,0.002227,yes
+FoodMem vs BiRefNet (memory vs per-frame),FoodMem,BiRefNet,iou,55,12.813,5.533,20.198,2.325e-05,yes
