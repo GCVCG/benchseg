@@ -1,9 +1,9 @@
 method,family,iou_low_vc,iou_med_vc,iou_high_vc,drop_low_minus_high
-BiRefNet,per-frame,96.3,94.7,88.2,8.0
-SeTR-MLA,per-frame,85.4,88.3,87.7,-2.4
-YOLO,per-frame,59.6,57.9,54.1,5.5
-SegMan,per-frame,17.7,20.2,18.9,-1.2
-FoodMem,memory/hybrid,90.1,93.2,92.8,-2.7
-SeTM+S3,memory/hybrid,87.2,91.0,90.9,-3.7
-Y+X2,memory/hybrid,81.2,84.9,86.6,-5.4
-Seg+S3,memory/hybrid,21.5,25.6,25.8,-4.3
+BiRefNet,per-frame,96.1,94.2,83.4,12.7
+SeTR-MLA,per-frame,85.5,88.4,88.0,-2.5
+YOLO,per-frame,59.7,57.9,55.7,4.0
+SegMan,per-frame,17.9,20.9,21.7,-3.8
+FoodMem,memory/hybrid,90.2,93.4,93.3,-3.1
+SeTM+S3,memory/hybrid,87.3,91.2,91.6,-4.3
+Y+X2,memory/hybrid,81.4,85.3,87.9,-6.5
+Seg+S3,memory/hybrid,21.8,26.6,32.4,-10.7
