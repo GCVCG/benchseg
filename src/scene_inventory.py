@@ -13,7 +13,11 @@ INV = {
     "MTF": [(str(i), n) for i, n in
             [(1, 199), (2, 200), (3, 200), (4, 200), (5, 200), (6, 200), (7, 200), (8, 200),
              (9, 30), (10, 30), (11, 30), (13, 30), (14, 30)]],
-    "V\\&F": [("apple", 201), ("avocado", 172), ("banana", 232), ("blackberry", 157)],
+    # complete V&F: 11 scenes (numbered 1-11), names per capture index
+    "V\\&F": [("avocado (1)", 172), ("banana (2)", 232), ("blackberry (3)", 222),
+             ("blueberry (4)", 177), ("carrot (5)", 215), ("cucumber (6)", 216),
+             ("grapes (7)", 225), ("peach (8)", 213), ("pear (9)", 228),
+             ("strawberry (10)", 207), ("apple (11)", 201)],
     "FKit": [("aguacate", 1078), ("apple", 1005), ("apple\\_pie", 1201), ("banana", 1156),
              ("capsicum", 881), ("chocolate\\_bomb", 1111), ("chocolate\\_cake", 781),
              ("chocolate\\_croissant", 1122), ("donut", 780), ("durum", 1006),
@@ -24,6 +28,8 @@ INV = {
 # coarse food category per named scene; numbered scenes are multi-ingredient plated/tray meals
 CAT = {
     "apple": "Fruit", "avocado": "Fruit", "banana": "Fruit", "blackberry": "Fruit",
+    "blueberry": "Fruit", "carrot": "Vegetable", "cucumber": "Vegetable", "grapes": "Fruit",
+    "peach": "Fruit", "strawberry": "Fruit",
     "aguacate": "Fruit", "capsicum": "Vegetable", "lemon": "Fruit", "orange": "Fruit",
     "pear": "Fruit", "yellow\\_cane": "Fruit",
     "donut": "Baked/Pastry", "apple\\_pie": "Baked/Pastry", "chocolate\\_bomb": "Baked/Pastry",
@@ -39,7 +45,7 @@ PART_DESC = {"N5k": "Plated multi-ingredient meal", "MTF": "Tray multi-ingredien
 def cat_of(part, scene):
     if part in ("N5k", "MTF"):
         return PART_DESC[part]
-    return CAT.get(scene, "Other")
+    return CAT.get(scene.split(" (")[0], "Other")  # strip "(N)" capture index for V&F
 
 
 def main():
@@ -54,7 +60,7 @@ def main():
 
     # LaTeX: one block per partition
     L = [r"\begin{table}[htb]", r"\centering", r"\footnotesize",
-         r"\caption{\change{Scene-level category inventory of the $48$ evaluated dish scenes. "
+         r"\caption{\change{Scene-level category inventory of the $55$ evaluated dish scenes. "
          r"FKit and V\&F scenes are single named items; N5k and MTF scenes are multi-ingredient "
          r"meals identified by capture index. $n$ denotes the number of multi-view frames per scene.}}",
          r"\label{tab:scene_inventory}",
@@ -80,7 +86,7 @@ def main():
         f.write("\n".join(L) + "\n")
     print(f"wrote results/scene_inventory.csv ({len(rows)} scenes) + results/tables/tab_scene_inventory.tex")
     print("totals:", {p: (len(s), sum(n for _, n in s)) for p, s in INV.items()},
-          "=> 48 scenes,", sum(sum(n for _, n in s) for s in INV.values()), "frames")
+          "=> 55 scenes,", sum(sum(n for _, n in s) for s in INV.values()), "frames")
 
 
 if __name__ == "__main__":

@@ -22,10 +22,17 @@ MTF,10,Tray multi-ingredient meal,30
 MTF,11,Tray multi-ingredient meal,30
 MTF,13,Tray multi-ingredient meal,30
 MTF,14,Tray multi-ingredient meal,30
-V&F,apple,Fruit,201
-V&F,avocado,Fruit,172
-V&F,banana,Fruit,232
-V&F,blackberry,Fruit,157
+V&F,avocado (1),Fruit,172
+V&F,banana (2),Fruit,232
+V&F,blackberry (3),Fruit,222
+V&F,blueberry (4),Fruit,177
+V&F,carrot (5),Vegetable,215
+V&F,cucumber (6),Vegetable,216
+V&F,grapes (7),Fruit,225
+V&F,peach (8),Fruit,213
+V&F,pear (9),Fruit,228
+V&F,strawberry (10),Fruit,207
+V&F,apple (11),Fruit,201
 FKit,aguacate,Fruit,1078
 FKit,apple,Fruit,1005
 FKit,apple_pie,Baked/Pastry,1201
