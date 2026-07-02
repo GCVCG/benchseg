@@ -42,3 +42,65 @@ The repo/CSV convention is `+S2 = SAM2`, `+S3 = SAM3`. The headline `SeTM+S3` an
 ## D. Already correct in rebuttal 3 (no change)
 SeTM+S3 93.30 / FoodMem 92.91 / gap 0.39; R2.1 SeTR-MLA 80.01 → 83.09; FLMM 49.21/43.90/35.42;
 DoraemonGPT 32.27/26.12; 5-run std 0.29%; the continuity (R4.2) correction narrative; 55 scenes.
+
+## E. Run-to-run stability surfaced in manuscript (post-V&F, last change)
+Reason: rebuttal R1.4 and R4.4 claimed a "regenerated the full table five times" stability
+check, but it appeared nowhere in the manuscript — a reviewer cross-checking would not find it.
+Backing data: results/repeatability_5runs.csv, results/spatial_repeatability_5runs.csv,
+results/foodseg103_repeatability_5runs.csv (5 runs each).
+
+Manuscript (docs_work/elsarticle-template-num.tex, Reproducibility section):
+- Added \subsection{Run-to-run stability} (\label{sec:repeatability}): 34/35 configs
+  bit-identical across 5 runs (per-cell std = 0); only kMean++ stochastic (k-means++ init),
+  max per-cell std 0.29% across all metrics/partitions; FoodSeg103 table also bit-identical.
+- Added summary table \label{tab:repeatability} (worst-case per-metric std):
+  kMean++ max sigma  -> mAP 0.04, Recall 0.10, IoU 0.04, C_t 0.10, FR 0.29, dIoU 0.06
+  Other 34 methods   -> 0.00 on every metric.
+  Numbers verified against results/repeatability_5runs.csv:
+  continuity max std 0.1011 (kMean++/MTF), flicker 0.2927 (kMean++/N5K), drift 0.0634,
+  sigma 0.0148; spatial mAP 0.0383, recall 0.0974, iou 0.0354 (all kMean++).
+
+Rebuttal (docs_work/rebuttal.tex):
+- R1.4 and R4.4: appended a pointer to the new "Run-to-run stability" subsection/table so the
+  five-times claim is now verifiable in the manuscript; noted per-run CSVs are in the release.
+
+Verified: table floats balanced 29/29; active tabulars 25/25 (35/34 raw counts commented-out
+template blocks). No new experiments required — all reviewer-requested experiments already run.
+
+## F. Ablation tables verified current (no change needed)
+Checked whether the mask-count (M=1,3,6,9, first vs random) and memory-size ablation tables in
+the manuscript reflect the complete-V&F data. Regenerated both via src/build_ablation_tables.py
+and diffed row-by-row against docs_work/elsarticle-template-num.tex.
+
+- tab:masks_ablation (\label): 12/12 data rows MATCH the freshly-built table (Y+X2, S+X2, SF+X2
+  x M in {1,3,6,9}). The "random" column IS present — last column, mean+/-std over 3 draws.
+- tab:memory_ablation (\label): 4/4 rows MATCH (working memory 4/10/20/40).
+
+Where the random draws live:
+- In the paper: the "random" column of tab:masks_ablation (first-M vs random-M folded into one
+  table, per earlier decision — not two separate tables).
+- Raw data: results/ablation_spatial_{FKIT,MTF,N5K,VF}.csv, rows named <combo>_M<M>_r{0,1,2}
+  (e.g. Y+X2_M3_r0/r1/r2); build_ablation_tables.py averages r0/r1/r2 into mean+/-std cells.
+
+Outcome: no edit required — both ablation tables already regenerated on complete V&F; random
+results present. (Open option: split random draws into a standalone table if desired.)
+
+## G. Donut per-frame mAP extended to all 35 configs (for Fig 7/8 3D plots)
+The old results/donut_per_frame_map.csv covered only 16 methods (the original figure set);
+the other 25 configs were missing (user-flagged). Root cause: local data/preds/FKIT held only
+14 dirs; all 35 donut prediction dirs (780 masks each) live on the cluster.
+
+- src/donut_per_frame.py: METHODS replaced with the full 35 canonical configs (method column
+  == prediction dir == all_metrics.csv name).
+- Ran on cluster (login node), regenerated on complete predictions, synced back:
+  results/donut_per_frame_map.csv  = 27,300 rows (35 x 780), cols method,frame,mAP,recall,iou,accuracy
+  results/donut_pie_bins.csv       = 35 rows, bins <=50 / 50-75 / 75-95 / >=95 (counts + %)
+- Verified: methods == all_metrics.csv set exactly (0 missing, 0 extra); 780 frames per method.
+
+NAMING CHANGE: method column now uses canonical names (FLMM, SETR_MLA, SeTM+S3, SegMan_ADE,
+Y+X2, ...) instead of the old figure display aliases (FoodLMM, SeTR-MLA, SegMan, YOLO+XMem2).
+Fig 7/8 plotting code keyed on the old 16 display names must remap those aliases.
+
+3D RENDER STILL PENDING (not blocking data): the actual Fig-7 camera-location plots need each
+donut frame's 3D camera position (SfM/COLMAP), which is NOT in the repo or data drives. Per user
+decision, we deliver the CSVs only; plotting to be done in the user's existing pipeline.

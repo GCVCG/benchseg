@@ -12,3 +12,4 @@ tracking_models/sam2/
 *.gz
 *.zip
 logs_*.log
+docs_work/

@@ -23,13 +23,17 @@ run(){ # partition memval
   [ -d "$sd" ] || { echo "skip mem$V/$P (no seed)"; return; }
   local need=$(ls "$sd"|wc -l) have=$(ls "$md" 2>/dev/null|wc -l)
   [ "$have" -ge "$need" ] && [ "$need" -gt 0 ] && { echo "complete mem$V/$P, skip"; return; }
-  [ "$have" -gt 0 ] && rm -rf "$md"
-  echo ">>> FoodMem_mem$V/$P (max_mid_term_frames=$V) $(date +%H:%M:%S)"
-  singularity exec --nv --pwd /workspace --bind "$ROOT":/workspace "$ROOT/containers/python310.sif" \
-    /workspace/venvs/foodseg/bin/python /workspace/src/track_pipeline.py \
-      --img_dir /workspace/data/${IMGS[$P]}/images --seed_preds_dir /workspace/$sd \
-      --out_dir /workspace/$md --tracker xmem2 --n_seed 1 --xmem_max_mid $V \
-      --venv_py /workspace/venvs/xmem2/bin/python --tracker_dir /workspace/baselines/XMem2 --xmem_ckpt saves/XMem.pth
+  for attempt in 1 2 3; do
+    [ "$(ls "$md" 2>/dev/null|wc -l)" -ge "$need" ] && break
+    rm -rf "$md"
+    echo ">>> FoodMem_mem$V/$P (max_mid_term_frames=$V) attempt $attempt $(date +%H:%M:%S)"
+    timeout 50m singularity exec --nv --pwd /workspace --bind "$ROOT":/workspace "$ROOT/containers/python310.sif" \
+      /workspace/venvs/foodseg/bin/python /workspace/src/track_pipeline.py \
+        --img_dir /workspace/data/${IMGS[$P]}/images --seed_preds_dir /workspace/$sd \
+        --out_dir /workspace/$md --tracker xmem2 --n_seed 1 --xmem_max_mid $V \
+        --venv_py /workspace/venvs/xmem2/bin/python --tracker_dir /workspace/baselines/XMem2 --xmem_ckpt saves/XMem.pth
+    rc=$?; [ $rc -eq 124 ] && echo "  TIMED OUT (hang) attempt $attempt"
+  done
   echo "### FoodMem_mem$V/$P: $(ls $md 2>/dev/null|wc -l)/$need $(date +%H:%M:%S) ###"
 }
 

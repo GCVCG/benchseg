@@ -16,13 +16,16 @@ from spatial_metrics import frame_metrics, index  # noqa: E402
 
 GT = "data/FoodKit_dataset_reordered/masks"
 SCENE = "donut"
-# figure caption order (display name -> prediction dir)
-METHODS = [
-    ("FoodLMM", "FLMM"), ("kMean++", "kMean++"), ("CCNet-Re", "CCNet-Re"), ("CCNet", "CCNet"),
-    ("YOLO", "YOLO"), ("Swin-S", "Swin-S"), ("FPN-Re", "FPN-Re"), ("Swin-B", "Swin-B"),
-    ("SeTR-Naive", "SeTN"), ("SegMan", "SegMan_ADE"), ("SeTR-MLA", "SETR_MLA"), ("FoodSAM", "FSAM"),
-    ("BiRefNet", "BiRefNet"), ("DEVA", "DEVA"), ("FoodMem", "FoodMem"), ("YOLO+XMem2", "Y+X2"),
+# all 35 canonical configurations (method column == prediction dir == all_metrics.csv name)
+CONFIGS = [
+    "BiRefNet", "CCNet", "CCNet-Re", "DEVA", "DoraemonGPT",
+    "FLMM", "FLMM+S2", "FLMM+S3", "FLMM+X2", "FPN-Re", "FSAM", "FoodMem",
+    "S+X2", "SC+S2", "SC+S3", "SC+X2", "SETR_MLA", "SF+S2", "SF+S3", "SF+X2",
+    "SeTM+S2", "SeTM+S3", "SeTN", "Seg+S2", "Seg+S3",
+    "SegMan_ADE", "SegMan_COCO", "SegMan_FS", "Swin-B", "Swin-S",
+    "Y+S2", "Y+S3", "Y+X2", "YOLO", "kMean++",
 ]
+METHODS = [(c, c) for c in CONFIGS]
 
 
 def bin_of(m):  # m in [0,100]
