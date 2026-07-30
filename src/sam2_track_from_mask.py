@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import re
 from pathlib import Path
 from tracemalloc import start
 from typing import Dict, List, Tuple
@@ -12,6 +13,20 @@ from PIL import Image
 
 import torch
 from sam2.build_sam import build_sam2_video_predictor
+
+
+def frame_index_from_name(path: str) -> int:
+    """Parse the seed frame index from a mask filename. Seeds written by
+    track_pipeline are named `<idx>.png` (zero-padded); prefer the integer after
+    the last underscore (`<scene>_<frame>`), else the first integer in the stem."""
+    stem = os.path.splitext(os.path.basename(path))[0]
+    m = re.search(r"_(\d+)$", stem)
+    if m:
+        return int(m.group(1))
+    m = re.search(r"\d+", stem)
+    if m is None:
+        raise ValueError(f"cannot parse frame index from seed mask name {stem!r}")
+    return int(m.group())
 
 
 def load_mask_image(mask_path: str) -> np.ndarray:
@@ -97,6 +112,10 @@ def main():
                         help="Number of mask files to use as seed masks (uses first N files sorted by name).")
     parser.add_argument("--frame_idx", type=int, default=0,
                         help="Index of the frame where the masks apply (default: 0).")
+    parser.add_argument("--multiseed_from_name", action="store_true",
+                        help="Place each seed mask at the frame index parsed from its filename "
+                             "(multi-frame re-seeding), using ALL masks in --mask_dir, instead of "
+                             "the first --n_masks all at --frame_idx. Default off keeps legacy behaviour.")
     parser.add_argument("--checkpoint", default="checkpoints/sam2.1_hiera_large.pt")
     parser.add_argument("--config", default="configs/sam2.1/sam2.1_hiera_l.yaml")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -157,17 +176,20 @@ def main():
     import glob
     mask_files = sorted(glob.glob(os.path.join(args.mask_dir, "*.png"))) + \
                  sorted(glob.glob(os.path.join(args.mask_dir, "*.jpg")))
-    mask_files = mask_files[:args.n_masks]  # Take only first n_masks
-    
+    if not args.multiseed_from_name:
+        mask_files = mask_files[:args.n_masks]  # Take only first n_masks
+
     if not mask_files:
         raise ValueError(f"No mask files found in {args.mask_dir}")
 
-    # Add mask prompts from the first N mask files
+    # Add mask prompts. Legacy: all masks at --frame_idx. Multi-seed: each mask at
+    # the frame index parsed from its filename (periodic re-seeding).
     for mask_path in mask_files:
         raw_mask = load_mask_image(mask_path)
+        seed_idx = frame_index_from_name(mask_path) if args.multiseed_from_name else args.frame_idx
         _, _, _ = predictor.add_new_mask(
             inference_state=inference_state,
-            frame_idx=args.frame_idx,
+            frame_idx=seed_idx,
             obj_id=1,
             mask=raw_mask,
         )
